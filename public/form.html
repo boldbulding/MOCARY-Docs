@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nouveau document - MOCARY SA</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .card h2 { margin-bottom: 1rem; }
+        .seg { display: flex; gap: 1.4rem; margin-bottom: 1rem; }
+        .seg label { display: flex; align-items: center; gap: 0.35rem; font-weight: 700; cursor: pointer; font-size: 0.95rem; }
+
+        .client-type {
+            display: flex; gap: 1.8rem; align-items: center; margin-bottom: 0.9rem;
+            border: 2px solid var(--primary); padding: 0.7rem 1rem; border-radius: 8px; background: #fff;
+        }
+        .client-type .ct-label { font-weight: 800; text-transform: uppercase; font-size: 0.8rem; margin-right: 0.4rem; color: var(--muted); }
+        .client-type .case { display: flex; align-items: center; gap: 0.4rem; font-weight: 700; cursor: pointer; font-size: 0.95rem; }
+        .client-type .case input { width: 1.1rem; height: 1.1rem; accent-color: var(--primary); cursor: pointer; }
+
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.9rem; }
+        .field { margin-bottom: 0.6rem; }
+        .field label { display: block; font-weight: 600; font-size: 0.82rem; margin-bottom: 0.3rem; color: #374151; }
+        .field input, .field select, .field textarea { width: 100%; padding: 0.5rem 0.7rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.9rem; }
+        .field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: var(--accent); }
+        .field input.inline-btn { width: auto; }
+
+        .lines-wrap { overflow-x: auto; margin-top: 1rem; border: 1px solid var(--border); border-radius: 8px; }
+        .lines-table { width: 100%; min-width: 980px; border-collapse: collapse; }
+        .lines-table th { background: var(--primary); color: #fff; font-size: 0.7rem; padding: 0.5rem; text-align: center; }
+        .lines-table th small { font-weight: 400; opacity: 0.85; }
+        .lines-table td { border-bottom: 1px solid var(--border); padding: 0.25rem; }
+        .lines-table tbody tr:nth-child(even) { background: #fafafa; }
+        .lines-table input, .lines-table select { width: 100%; padding: 0.4rem; border: 1px solid transparent; border-radius: 4px; font-size: 0.82rem; background: transparent; }
+        .lines-table input:focus, .lines-table select:focus { border-color: var(--accent); background: #f0f6ff; }
+        .lines-table input.mt { font-weight: 700; background: #f3f4f6; }
+        .lines-table input.small, .lines-table select.small { text-align: center; }
+        .lines-table select { background: #fff; border-color: #e5e7eb; }
+        .btn-del { background: #fee2e2; color: var(--danger); border: none; border-radius: 4px; width: 28px; height: 28px; cursor: pointer; font-weight: 700; }
+
+        .totals { margin-top: 1rem; border-top: 2px solid var(--primary); padding-top: 0.6rem; text-align: right; }
+        .totals .row { display: flex; justify-content: flex-end; gap: 1rem; align-items: center; margin-top: 0.3rem; }
+        .totals .row b { font-size: 1.05rem; min-width: 170px; text-align: right; }
+        #totalDisplay { font-size: 1.3rem; font-weight: 800; }
+        .lettres-row { flex-wrap: wrap; }
+        .letters-input { width: 100%; max-width: 620px; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px; text-transform: uppercase; font-size: 0.9rem; }
+
+        .form-actions { margin-top: 1.2rem; display: flex; gap: 0.75rem; flex-wrap: wrap; }
+        #draftStatus { margin-top: 0.9rem; font-size: 0.78rem; font-weight: 600; color: var(--muted); min-height: 1rem; }
+        #draftStatus.active { color: #065f46; }
+
+        .pu-active-badge { color: #b45309; font-weight: 800; }
+        @media (max-width: 800px) { .grid { grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 560px) { .grid { grid-template-columns: 1fr; } .form-actions .btn { width: 100%; } }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="brand">
+            <div class="logo-mark">M</div>
+            <div>
+                <span class="brand-name">MOCARY SA</span>
+                <span class="brand-sub">TAPIS NOUÉS MAIN-ARTISANAT</span>
+            </div>
+        </div>
+        <div class="header-actions">
+            <a href="index.html" class="btn">← Retour</a>
+            <a href="form.html?type=devis" class="btn btn-dark">+ Devis</a>
+            <a href="form.html?type=facture" class="btn btn-primary" style="border-color:var(--accent)">+ Facture</a>
+        </div>
+    </header>
+
+    <main>
+        <div class="card">
+            <h2 id="pageTitle">Nouveau document</h2>
+
+            <form id="docForm">
+                <div class="seg">
+                    <label><input type="radio" name="type" value="facture" checked> <span class="badge badge-facture">FACTURE</span></label>
+                    <label><input type="radio" name="type" value="devis"> <span class="badge badge-devis">DEVIS</span></label>
+                </div>
+
+                <div class="client-type" id="clientTypeBox">
+                    <span class="ct-label">Type de client :</span>
+                    <label class="case"><input type="checkbox" id="ctParticulier" checked> PARTICULIER</label>
+                    <label class="case"><input type="checkbox" id="ctRevendeur"> REVENDEUR</label>
+                </div>
+
+                <div class="grid">
+                    <div class="field">
+                        <label>N° du document *</label>
+                        <input type="text" id="numero" placeholder="Automatique (FAC-0001)">
+                    </div>
+                    <div class="field">
+                        <label>Date *</label>
+                        <input type="date" id="date_doc" required>
+                    </div>
+                    <div class="field">
+                        <label>État</label>
+                        <select id="etat">
+                            <option value="brouillon">Brouillon</option>
+                            <option value="emise">Émise</option>
+                            <option value="validee">Validée</option>
+                            <option value="annulee">Annulée</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label>Client (carnet)</label>
+                        <div style="display:flex; gap:0.4rem;">
+                            <select id="client_id" style="flex:1;"><option value="">— Choisir —</option></select>
+                            <button type="button" class="btn btn-sm" onclick="saveClientCourant()" title="Enregistrer ce client dans le carnet">＋</button>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label>Nom du client *</label>
+                        <input type="text" id="client_nom" placeholder="Nom / raison sociale">
+                    </div>
+                    <div class="field">
+                        <label>ICE N°</label>
+                        <input type="text" id="client_ice">
+                    </div>
+                    <div class="field">
+                        <label>Adresse</label>
+                        <input type="text" id="client_adresse" placeholder="Adresse (optionnel)">
+                    </div>
+                </div>
+
+                <h3 style="margin-top:1.4rem;border-top:1px solid var(--border);padding-top:0.8rem;">Lignes du document</h3>
+
+                <div class="lines-wrap">
+                <table class="lines-table">
+                    <thead>
+                        <tr>
+                            <th style="width:20%">Désignation</th>
+                            <th style="width:6%">TYPE<br><small>(S/L)</small></th>
+                            <th style="width:6%">QTE</th>
+                            <th style="width:7%">LONG (m)</th>
+                            <th style="width:7%">LARG (m)</th>
+                            <th style="width:8%">Surf</th>
+                            <th style="width:7%">N° PIÈCES</th>
+                            <th style="width:8%">Unité</th>
+                            <th style="width:12%">P.U. DHS<br><small id="puHint">Particulier</small></th>
+                            <th style="width:12%">Montant DHS</th>
+                            <th style="width:5%"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="linesBody"></tbody>
+                </table>
+                </div>
+                <button type="button" class="btn" style="margin-top:0.6rem;" onclick="addLine()">+ Ajouter une ligne</button>
+
+                <div class="totals">
+                    <div class="row" id="totalHtRow" style="display:none">Total HT : <b id="totalHtDisplay">0,00</b></div>
+                    <div class="row" id="totalTvaRow" style="display:none">TVA : <b id="totalTvaDisplay">0,00</b></div>
+                    <div class="row">TOTAL GÉNÉRAL : <b id="totalDisplay">0,00</b></div>
+                    <div class="row lettres-row">
+                        <label style="margin-right:0.8rem;">Montant en lettres :</label>
+                        <input type="text" id="montant_lettres" class="letters-input">
+                    </div>
+                </div>
+
+                <div class="grid" style="margin-top:1rem;">
+                    <div class="field">
+                        <label>Qualité / mention produit</label>
+                        <input type="text" id="qualite" placeholder="Tapis d'origine artisanale...">
+                    </div>
+                    <div class="field">
+                        <label>Mention exonération TVA (Art. 91 CGI)</label>
+                        <select id="mention">
+                            <option value="1">Inclure</option>
+                            <option value="0">Exclure</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label>TVA (%) <span style="font-weight:400;font-size:.8rem;color:var(--muted)">(si incluse et &gt; 0)</span></label>
+                        <input type="number" step="0.01" min="0" id="tva" placeholder="0" value="0">
+                    </div>
+                </div>
+                <div class="field">
+                    <label>Remarque</label>
+                    <textarea id="remarque" rows="2" placeholder="Remarque éventuelle..."></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary" id="saveBtn">💾 Enregistrer</button>
+                    <button type="button" class="btn btn-dark" id="printBtn">🖨 Enregistrer &amp; Imprimer</button>
+                    <a href="index.html" class="btn">Annuler</a>
+                </div>
+                <div id="draftStatus"></div>
+            </form>
+        </div>
+    </main>
+
+    <script src="js/api.js"></script>
+    <script src="js/form.js"></script>
+</body>
+</html>

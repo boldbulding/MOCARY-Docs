@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: mocary-docs
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node server/index.js
+    healthCheckPath: /index.html
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "24"
+      - key: DATABASE_URL
+        sync: false

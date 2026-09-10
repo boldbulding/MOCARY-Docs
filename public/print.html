@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document - MOCARY SA</title>
+    <link rel="stylesheet" href="css/print.css">
+</head>
+<body class="print-body">
+    <div class="toolbar no-print">
+        <button onclick="window.print()" class="btn-print">🖨 Imprimer</button>
+        <button onclick="window.history.back()" class="btn-ghost">← Retour</button>
+        <span class="spacer"></span>
+        <a href="form.html?id=" id="editLink" class="btn-ghost" style="text-decoration:none;">✏️ Modifier</a>
+    </div>
+
+    <div class="sheet" id="sheet">
+        <!-- En-tête -->
+        <div class="doc-header">
+            <div class="co-header">
+                <div class="logo">
+                    <div class="logo-mark">M</div>
+                    <div class="logo-text">
+                        <span class="logo-name">MOCARY SA</span>
+                        <span class="logo-sub">TAPIS NOUÉS MAIN-ARTISANAT</span>
+                    </div>
+                </div>
+                <div class="co-lignes">
+                    <div>BD EZZARBIA-SALÉ - BP 615 TABRIQUET SALÉ-MOROCCO</div>
+                    <div>Tél : +212 537 808 749 &nbsp;|&nbsp; Fax : +212 537 832 957</div>
+                    <div>Email : mocarysa@gmail.com</div>
+                    <div>SA Capital 16 500 000 DHS</div>
+                </div>
+            </div>
+            <div class="doc-titre">
+                <span id="titre">FACTURE</span>
+            </div>
+        </div>
+
+        <!-- Numéro + Date + Client -->
+        <div class="doc-info">
+            <div class="info-left">
+                <div class="info-row"><span class="lbl">DESTINATAIRE</span> <strong id="clientNom"></strong></div>
+                <div class="info-row" id="clientIceRow"><span class="lbl">ICE N° :</span> <strong id="clientIce"></strong></div>
+                <div class="info-row" id="clientAdresseRow" style="display:none"><span class="lbl">ADR :</span> <strong id="clientAdresse"></strong></div>
+                <div class="type-client-box">
+                    <span class="tcb-label">TYPE DE CLIENT</span>
+                    <span class="case"><span class="box" id="cbPart"></span> PARTICULIER</span>
+                    <span class="case"><span class="box" id="cbRev"></span> REVENDEUR</span>
+                </div>
+            </div>
+            <div class="info-right">
+                <div class="info-row"><span class="lbl">N° :</span> <strong id="numero"></strong></div>
+                <div class="info-row"><span class="lbl">Date :</span> <strong id="dateDoc"></strong></div>
+            </div>
+        </div>
+
+        <!-- Tableau -->
+        <table class="doc-table">
+            <thead>
+                <tr>
+                    <th style="width:26%">Désignation</th>
+                    <th style="width:5%">TYPE</th>
+                    <th style="width:6%">QTE</th>
+                    <th style="width:7%">LONG<br>(m)</th>
+                    <th style="width:7%">LARG<br>(m)</th>
+                    <th style="width:8%">Surf</th>
+                    <th style="width:8%">NB DE<br>PIÈCES</th>
+                    <th style="width:15%">P.U. EN<br>DHS</th>
+                    <th style="width:14%">EN DHS</th>
+                </tr>
+            </thead>
+            <tbody id="lignesBody"></tbody>
+            <tfoot>
+                <tr class="total-row">
+                    <td colspan="8" class="lbl-total">TOTAL</td>
+                    <td id="totalDhs" class="val-total"></td>
+                </tr>
+                <tr class="tva-row" id="tvaRow" style="display:none">
+                    <td colspan="8" class="lbl-total" id="tvaLabel"></td>
+                    <td id="tvaDhs" class="val-total"></td>
+                </tr>
+                <tr class="total-general">
+                    <td colspan="8" class="lbl-total">TOTAL GÉNÉRAL EN DIRHAMS</td>
+                    <td id="totalGeneral" class="val-total"></td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <!-- Texte en bas -->
+        <div class="doc-footer-text">
+            <div class="somme-lettres" id="sommeLettres"></div>
+            <div class="mentions">
+                <div id="mentionTva"></div>
+                <div id="mentionQualite"></div>
+                <div id="mentionLaine"></div>
+                <div class="livraison" id="mentionLivraison"></div>
+                <div class="important" id="mentionImportant"></div>
+            </div>
+            <div class="conditions">
+                <div id="condPaiement"><strong>Conditions de paiement :</strong> 60 % à la commande / 40 % à la livraison</div>
+                <div id="condValidite"><strong>Devis valable 1 mois</strong></div>
+            </div>
+            <div class="reglement">
+                <span><strong>Mode de règlement :</strong></span>
+                <label class="case"><input type="checkbox"> Chèque</label>
+                <label class="case"><input type="checkbox"> Espèces</label>
+                <label class="case"><input type="checkbox"> Crédit</label>
+            </div>
+        </div>
+
+        <!-- Pied de page société -->
+        <div class="doc-pied">
+            <div class="pied-ligne">
+                <span>TAPIS NOUÉS MAIN-ARTISANAT - BD EZZARBIA SALÉ - BP 615 TABRIQUET SALÉ-MOROCCO</span>
+            </div>
+            <div class="pied-ligne small">
+                Tél : +212 537 808 749 - Fax : +212 537 832 957 - Email : mocarysa@gmail.com
+            </div>
+            <div class="pied-ligne small">
+                SA Capital 16 500 000 DHS - TP : 28600300 - RC : 143 SALÉ DA 1291 - IF : 03355172 - ICE : 001544061000080
+            </div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/print.js"></script>
+</body>
+</html>

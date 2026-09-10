@@ -1,0 +1,29 @@
+{
+  "name": "mocary-docs",
+  "version": "1.0.0",
+  "description": "Application de gestion des factures et devis - MOCARY SA (particulier / revendeur) avec export Excel et impression",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node server/index.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "exceljs": "^4.3.0",
+    "express": "^4.18.2",
+    "pg": "^8.14.1"
+  },
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "keywords": [
+    "factures",
+    "devis",
+    "mocary",
+    "excel",
+    "impression"
+  ],
+  "author": "",
+  "license": "ISC"
+}

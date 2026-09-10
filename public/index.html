@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Factures & Devis - MOCARY SA</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="brand">
+            <div class="logo-mark">M</div>
+            <div>
+                <span class="brand-name">MOCARY SA</span>
+                <span class="brand-sub">TAPIS NOUÉS MAIN-ARTISANAT — GESTION FACTURES & DEVIS</span>
+            </div>
+        </div>
+        <div class="header-actions">
+            <a href="form.html?type=devis" class="btn btn-dark">+ Nouveau devis</a>
+            <a href="form.html?type=facture" class="btn btn-primary" style="border-color:var(--accent)">+ Nouvelle facture</a>
+        </div>
+    </header>
+
+    <main>
+        <div class="card">
+            <div class="tabs">
+                <button class="tab active" data-t="" onclick="charge('')">Tout</button>
+                <button class="tab" data-t="devis" onclick="charge('devis')">Devis</button>
+                <button class="tab" data-t="facture" onclick="charge('facture')">Factures</button>
+            </div>
+            <div class="filters">
+                <input type="text" id="search" placeholder="Rechercher (n°, client, ICE)...">
+                <select id="filterEtat">
+                    <option value="">Tous les états</option>
+                    <option value="brouillon">Brouillon</option>
+                    <option value="emise">Émise</option>
+                    <option value="validee">Validée</option>
+                    <option value="annulee">Annulée</option>
+                </select>
+                <button class="btn btn-sm" onclick="loadDocs()">Filtrer</button>
+                <button class="btn btn-sm btn-primary" id="excelBtn" onclick="exportExcel()">📥 Excel</button>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>N°</th>
+                            <th>Date</th>
+                            <th>Client</th>
+                            <th>ICE</th>
+                            <th>Type client</th>
+                            <th>Total (DHS)</th>
+                            <th>État</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="docsTable"></tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/api.js"></script>
+    <script src="js/list.js"></script>
+</body>
+</html>
