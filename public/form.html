@@ -64,9 +64,10 @@
             </div>
         </div>
         <div class="header-actions">
-            <a href="index.html" class="btn">← Retour</a>
+            <a href="documents.html" class="btn">← Retour</a>
             <a href="form.html?type=devis" class="btn btn-dark">+ Devis</a>
             <a href="form.html?type=facture" class="btn btn-primary" style="border-color:var(--accent)">+ Facture</a>
+            <button class="btn btn-sm" onclick="logout()">Déconnexion</button>
         </div>
     </header>
 
@@ -184,7 +185,7 @@
                 <div class="form-actions">
                     <button type="submit" class="btn btn-primary" id="saveBtn">💾 Enregistrer</button>
                     <button type="button" class="btn btn-dark" id="printBtn">🖨 Enregistrer &amp; Imprimer</button>
-                    <a href="index.html" class="btn">Annuler</a>
+                    <a href="documents.html" class="btn">Annuler</a>
                 </div>
                 <div id="draftStatus"></div>
             </form>

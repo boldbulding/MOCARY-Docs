@@ -1,6 +1,7 @@
 const params = new URLSearchParams(window.location.search);
 const id = params.get('id');
-if (!id) { window.location.href = 'index.html'; throw new Error('no id'); }
+if (!id) { window.location.href = isLoggedIn() ? 'documents.html' : 'index.html'; throw new Error('no id'); }
+if (!checkAuth()) throw new Error('Non connecté');
 
 document.getElementById('editLink').href = 'form.html?id=' + Number(id);
 

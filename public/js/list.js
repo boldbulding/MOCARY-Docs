@@ -1,6 +1,8 @@
 let currentType = '';
 let reqSeq = 0;
 
+if (!checkAuth()) throw new Error('Non connecté');
+
 const etatLabels = { brouillon: 'Brouillon', emise: 'Émise', validee: 'Validée', annulee: 'Annulée' };
 const clientTypeLabels = { particulier: 'Particulier', revendeur: 'Revendeur' };
 

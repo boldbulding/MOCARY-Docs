@@ -1,12 +1,56 @@
 const API_BASE = '/api';
 
+// ---------- Session / token JWT ----------
+function getToken() { try { return localStorage.getItem('token'); } catch (e) { return null; } }
+function setToken(t) { try { localStorage.setItem('token', t); } catch (e) {} }
+function getUser() { try { return JSON.parse(localStorage.getItem('user')); } catch (e) { return null; } }
+function setUser(u) { try { localStorage.setItem('user', JSON.stringify(u)); } catch (e) {} }
+function clearSession() {
+    try {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        localStorage.removeItem('mocary_docs_nouveau');
+    } catch (e) {}
+}
+
+function decodageJwt(token) {
+    try {
+        const part = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+        const pad = part.length % 4 === 0 ? '' : '='.repeat(4 - (part.length % 4));
+        return JSON.parse(atob(part + pad));
+    } catch (e) { return null; }
+}
+
+function isLoggedIn() {
+    const t = getToken();
+    if (!t) return false;
+    const payload = decodageJwt(t);
+    if (!payload || !payload.exp) { clearSession(); return false; }
+    if (Date.now() / 1000 > payload.exp) { clearSession(); return false; }
+    return true;
+}
+
+function logout() { clearSession(); window.location.href = 'index.html'; }
+
+function checkAuth() {
+    if (!isLoggedIn()) { window.location.href = 'index.html'; return false; }
+    return true;
+}
+
 async function apiCall(url, options = {}) {
+    const token = getToken();
     const headers = { 'Content-Type': 'application/json', ...options.headers };
+    if (token) headers['Authorization'] = 'Bearer ' + token;
     let res;
     try {
         res = await fetch(`${API_BASE}${url}`, { ...options, headers });
     } catch (e) {
         throw new Error('Serveur injoignable. Vérifiez que le serveur est démarré.');
+    }
+    if (res.status === 401 && token && !url.startsWith('/auth/')) {
+        clearSession();
+        window.location.href = 'index.html';
+        throw new Error('Session expirée, veuillez vous reconnecter');
     }
     if (!res.ok) {
         let msg = 'Erreur serveur (' + res.status + ')';
@@ -19,11 +63,19 @@ async function apiCall(url, options = {}) {
 }
 
 async function downloadFile(url, filename) {
+    const token = getToken();
+    const headers = {};
+    if (token) headers['Authorization'] = 'Bearer ' + token;
     let res;
     try {
-        res = await fetch(`${API_BASE}${url}`);
+        res = await fetch(`${API_BASE}${url}`, { headers });
     } catch (e) {
         throw new Error('Serveur injoignable');
+    }
+    if (res.status === 401 && token) {
+        clearSession();
+        window.location.href = 'index.html';
+        throw new Error('Session expirée, veuillez vous reconnecter');
     }
     if (!res.ok) {
         let msg = 'Export impossible';

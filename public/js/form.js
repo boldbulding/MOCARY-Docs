@@ -2,6 +2,8 @@ const params = new URLSearchParams(window.location.search);
 const editId = /^\d+$/.test(params.get('id') || '') ? params.get('id') : null;
 const docTypeParam = ['devis', 'facture'].includes(params.get('type')) ? params.get('type') : null;
 
+if (!checkAuth()) throw new Error('Non connecté');
+
 let activeType = 'particulier';
 let clientsListe = [];
 
@@ -367,7 +369,7 @@ async function majNumeroAuto() {
         try { doc = await apiCall('/documents/' + editId); }
         catch (e) {
             showNotification(e.message, 'error');
-            setTimeout(() => window.location.href = 'index.html', 1200);
+            setTimeout(() => window.location.href = 'documents.html', 1200);
             return;
         }
         document.getElementById('pageTitle').textContent = 'Modifier ' + (doc.type === 'devis' ? 'le devis' : 'la facture');
@@ -451,7 +453,7 @@ function restaurerDraft(b) {
 document.getElementById('docForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const saved = await save();
-    if (saved) { viderDraft(); showNotification('Document enregistré'); setTimeout(() => window.location.href = 'index.html', 600); }
+    if (saved) { viderDraft(); showNotification('Document enregistré'); setTimeout(() => window.location.href = 'documents.html', 600); }
 });
 
 document.getElementById('printBtn').addEventListener('click', async () => {

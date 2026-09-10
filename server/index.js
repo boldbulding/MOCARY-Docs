@@ -4,12 +4,20 @@ const cors = require('cors');
 const path = require('path');
 const db = require('./db');
 
+if (!process.env.JWT_SECRET) {
+    process.env.JWT_SECRET = require('crypto').randomBytes(48).toString('hex');
+    console.warn('ATTENTION : JWT_SECRET non défini, secret temporaire généré. Les sessions seront réinitialisées à chaque redémarrage.');
+}
+
+const auth = require('./middleware/auth').auth;
+
 const app = express();
 const PORT = process.env.PORT || 4000;
 
 (async () => {
     try {
         await db.init();
+        await db.ensureAdmin();
     } catch (e) {
         console.error('Erreur de connexion à la base de données :', e.message);
         process.exit(1);
@@ -20,8 +28,9 @@ const PORT = process.env.PORT || 4000;
     app.use(express.json({ limit: '1mb' }));
     app.use(express.static(path.join(__dirname, '../public')));
 
-    app.use('/api/documents', require('./routes/documents'));
-    app.use('/api/clients', require('./routes/clients'));
+    app.use('/api/auth', require('./routes/auth'));
+    app.use('/api/documents', auth, require('./routes/documents'));
+    app.use('/api/clients', auth, require('./routes/clients'));
 
     app.use('/api', (req, res) => {
         res.status(404).json({ error: 'Route non trouvée' });
@@ -41,5 +50,5 @@ const PORT = process.env.PORT || 4000;
 
     app.listen(PORT, () => {
         console.log(`MOCARY Docs démarré sur http://localhost:${PORT} (base: ${db.USE_PG ? 'PostgreSQL' : 'SQLite'})`);
-    });
+    });;
 })();

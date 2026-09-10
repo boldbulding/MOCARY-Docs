@@ -3,65 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Factures & Devis - MOCARY SA</title>
+    <title>Connexion - MOCARY SA</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
-    <header class="header">
-        <div class="brand">
-            <div class="logo-mark">M</div>
-            <div>
-                <span class="brand-name">MOCARY SA</span>
-                <span class="brand-sub">TAPIS NOUÉS MAIN-ARTISANAT — GESTION FACTURES & DEVIS</span>
+<body class="login-body">
+    <div class="login-wrap">
+        <div class="login-card">
+            <div class="login-logo">
+                <div class="logo-mark">M</div>
             </div>
+            <h1>MOCARY SA</h1>
+            <p class="login-sub">TAPIS NOUÉS MAIN-ARTISANAT</p>
+            <form id="loginForm">
+                <div class="login-field">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" placeholder="votre@email.com" autocomplete="username" required>
+                </div>
+                <div class="login-field">
+                    <label for="mot_de_passe">Mot de passe</label>
+                    <input type="password" id="mot_de_passe" placeholder="••••••••" autocomplete="current-password" required>
+                </div>
+                <div id="error" class="login-error" style="display:none"></div>
+                <button type="submit" class="btn btn-primary btn-block" id="submitBtn">Se connecter</button>
+            </form>
         </div>
-        <div class="header-actions">
-            <a href="form.html?type=devis" class="btn btn-dark">+ Nouveau devis</a>
-            <a href="form.html?type=facture" class="btn btn-primary" style="border-color:var(--accent)">+ Nouvelle facture</a>
-        </div>
-    </header>
-
-    <main>
-        <div class="card">
-            <div class="tabs">
-                <button class="tab active" data-t="" onclick="charge('')">Tout</button>
-                <button class="tab" data-t="devis" onclick="charge('devis')">Devis</button>
-                <button class="tab" data-t="facture" onclick="charge('facture')">Factures</button>
-            </div>
-            <div class="filters">
-                <input type="text" id="search" placeholder="Rechercher (n°, client, ICE)...">
-                <select id="filterEtat">
-                    <option value="">Tous les états</option>
-                    <option value="brouillon">Brouillon</option>
-                    <option value="emise">Émise</option>
-                    <option value="validee">Validée</option>
-                    <option value="annulee">Annulée</option>
-                </select>
-                <button class="btn btn-sm" onclick="loadDocs()">Filtrer</button>
-                <button class="btn btn-sm btn-primary" id="excelBtn" onclick="exportExcel()">📥 Excel</button>
-            </div>
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Type</th>
-                            <th>N°</th>
-                            <th>Date</th>
-                            <th>Client</th>
-                            <th>ICE</th>
-                            <th>Type client</th>
-                            <th>Total (DHS)</th>
-                            <th>État</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="docsTable"></tbody>
-                </table>
-            </div>
-        </div>
-    </main>
+    </div>
 
     <script src="js/api.js"></script>
-    <script src="js/list.js"></script>
+    <script>
+        if (isLoggedIn()) window.location.href = 'documents.html';
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            const errEl = document.getElementById('error');
+            btn.disabled = true;
+            errEl.style.display = 'none';
+            try {
+                const data = await apiCall('/auth/login', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        email: document.getElementById('email').value.trim(),
+                        mot_de_passe: document.getElementById('mot_de_passe').value
+                    })
+                });
+                setToken(data.token);
+                setUser(data.user);
+                window.location.href = 'documents.html';
+            } catch (err) {
+                errEl.textContent = err.message;
+                errEl.style.display = 'block';
+            } finally {
+                btn.disabled = false;
+            }
+        });
+    </script>
 </body>
 </html>

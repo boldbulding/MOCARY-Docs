@@ -57,10 +57,19 @@ function ddl(kind) {
     montant DOUBLE PRECISION NOT NULL DEFAULT 0
 );`;
 
+    const utilisateur = `CREATE TABLE IF NOT EXISTS utilisateur (
+    id ${id},
+    nom TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    mot_de_passe TEXT NOT NULL,
+    role TEXT NOT NULL DEFAULT 'employe' CHECK(role IN ('admin','responsable','employe')),
+    date_creation ${ts}
+);`;
+
     const indexes = `CREATE INDEX IF NOT EXISTS idx_ligne_doc ON document_ligne(doc_id);
 CREATE INDEX IF NOT EXISTS idx_doc_numero ON document(numero);`;
 
-    return [client, document, ligne, indexes];
+    return [client, document, ligne, utilisateur, indexes];
 }
 
 async function init() {
@@ -131,4 +140,20 @@ async function run(sql, ...params) {
     return conn.run(sql, ...params);
 }
 
-module.exports = { init, all, get, run, isUniqueError, USE_PG };
+// Crée le compte administrateur par défaut si aucun utilisateur n'existe.
+// Identifiants: ADMIN_EMAIL/ADMIN_PASSWORD (.env) sinon admin@example.com / admin123
+async function ensureAdmin() {
+    const email = String(process.env.ADMIN_EMAIL || 'admin@example.com').trim().toLowerCase();
+    const motDePasse = process.env.ADMIN_PASSWORD || 'admin123';
+    const existing = await get('SELECT id FROM utilisateur WHERE email = ?', email);
+    if (existing) return existing;
+    const bcrypt = require('bcryptjs');
+    const hash = bcrypt.hashSync(motDePasse, 10);
+    await run(
+        "INSERT INTO utilisateur (nom, email, mot_de_passe, role) VALUES (?, ?, ?, 'admin')",
+        'Administrateur', email, hash
+    );
+    return await get('SELECT id FROM utilisateur WHERE email = ?', email);
+}
+
+module.exports = { init, all, get, run, isUniqueError, USE_PG, ensureAdmin };
