@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -63,14 +63,14 @@
             <div class="logo-mark">M</div>
             <div>
                 <span class="brand-name">MOCARY SA</span>
-                <span class="brand-sub">TAPIS NOUÃ‰S MAIN-ARTISANAT</span>
+                <span class="brand-sub">TAPIS NOUÉS MAIN-ARTISANAT</span>
             </div>
         </div>
         <div class="header-actions">
-            <a href="documents.html" class="btn">â† Retour</a>
+            <a href="documents.html" class="btn">← Retour</a>
             <a href="form.html?type=devis" class="btn btn-dark">+ Devis</a>
             <a href="form.html?type=facture" class="btn btn-primary" style="border-color:var(--accent)">+ Facture</a>
-            <button class="btn btn-sm" onclick="logout()">DÃ©connexion</button>
+            <button class="btn btn-sm" onclick="logout()">Déconnexion</button>
         </div>
     </header>
 
@@ -92,7 +92,7 @@
 
                 <div class="grid">
                     <div class="field">
-                        <label>NÂ° du document *</label>
+                        <label>N° du document *</label>
                         <input type="text" id="numero" placeholder="Automatique (FAC-0001)">
                     </div>
                     <div class="field">
@@ -100,19 +100,19 @@
                         <input type="date" id="date_doc" required>
                     </div>
                     <div class="field">
-                        <label>Ã‰tat</label>
+                        <label>État</label>
                         <select id="etat">
                             <option value="brouillon">Brouillon</option>
-                            <option value="emise">Ã‰mise</option>
-                            <option value="validee">ValidÃ©e</option>
-                            <option value="annulee">AnnulÃ©e</option>
+                            <option value="emise">Émise</option>
+                            <option value="validee">Validée</option>
+                            <option value="annulee">Annulée</option>
                         </select>
                     </div>
                     <div class="field">
                         <label>Client (carnet)</label>
                         <div style="display:flex; gap:0.4rem;">
-                            <select id="client_id" style="flex:1;"><option value="">â€” Choisir â€”</option></select>
-                            <button type="button" class="btn btn-sm" onclick="saveClientCourant()" title="Enregistrer ce client dans le carnet">ï¼‹</button>
+                            <select id="client_id" style="flex:1;"><option value="">— Choisir —</option></select>
+                            <button type="button" class="btn btn-sm" onclick="saveClientCourant()" title="Enregistrer ce client dans le carnet">＋</button>
                         </div>
                     </div>
                     <div class="field">
@@ -120,7 +120,7 @@
                         <input type="text" id="client_nom" placeholder="Nom / raison sociale">
                     </div>
                     <div class="field">
-                        <label>ICE NÂ°</label>
+                        <label>ICE N°</label>
                         <input type="text" id="client_ice">
                     </div>
                     <div class="field">
@@ -135,12 +135,12 @@
                 <table class="lines-table">
                     <thead>
                         <tr>
-                            <th style="width:24%">DÃ©signation</th>
+                            <th style="width:24%">Désignation</th>
                             <th style="width:6%">TYPE<br><small>(S/M/L)</small></th>
                             <th style="width:6%">QTE</th>
                             <th style="width:7%">LONG (m)</th>
                             <th style="width:7%">LARG (m)</th>
-                            <th style="width:10%">SURF (mÂ²)<br><small>QTEÃ—LONÃ—LARG</small></th>
+                            <th style="width:10%">SURF (m²)<br><small>QTE×LON×LARG</small></th>
                             <th style="width:12%">P.U. DHS<br><small id="puHint">Particulier</small></th>
                             <th style="width:13%">Montant DHS</th>
                             <th style="width:5%"></th>
@@ -154,7 +154,7 @@
                 <div class="totals">
                     <div class="row" id="totalHtRow" style="display:none">Total HT : <b id="totalHtDisplay">0,00</b></div>
                     <div class="row" id="totalTvaRow" style="display:none">TVA : <b id="totalTvaDisplay">0,00</b></div>
-                    <div class="row">TOTAL GÃ‰NÃ‰RAL : <b id="totalDisplay">0,00</b></div>
+                    <div class="row">TOTAL GÉNÉRAL : <b id="totalDisplay">0,00</b></div>
                     <div class="row lettres-row">
                         <label style="margin-right:0.8rem;">Montant en lettres :</label>
                         <input type="text" id="montant_lettres" class="letters-input">
@@ -163,11 +163,11 @@
 
                 <div class="grid" style="margin-top:1rem;">
                     <div class="field">
-                        <label>QualitÃ© / mention produit</label>
+                        <label>Qualité / mention produit</label>
                         <input type="text" id="qualite" placeholder="Tapis d'origine artisanale...">
                     </div>
                     <div class="field">
-                        <label>Mention exonÃ©ration TVA (Art. 91 CGI)</label>
+                        <label>Mention exonération TVA (Art. 91 CGI)</label>
                         <select id="mention">
                             <option value="1">Inclure</option>
                             <option value="0">Exclure</option>
@@ -180,12 +180,12 @@
                 </div>
                 <div class="field">
                     <label>Remarque</label>
-                    <textarea id="remarque" rows="2" placeholder="Remarque Ã©ventuelle..."></textarea>
+                    <textarea id="remarque" rows="2" placeholder="Remarque éventuelle..."></textarea>
                 </div>
 
                 <div class="form-actions">
-                    <button type="submit" class="btn btn-primary" id="saveBtn">ðŸ’¾ Enregistrer</button>
-                    <button type="button" class="btn btn-dark" id="printBtn">ðŸ–¨ Enregistrer &amp; Imprimer</button>
+                    <button type="submit" class="btn btn-primary" id="saveBtn">💾 Enregistrer</button>
+                    <button type="button" class="btn btn-dark" id="printBtn">🖨 Enregistrer &amp; Imprimer</button>
                     <a href="documents.html" class="btn">Annuler</a>
                 </div>
                 <div id="draftStatus"></div>

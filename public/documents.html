@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -15,13 +15,13 @@
             <div class="logo-mark">M</div>
             <div>
                 <span class="brand-name">MOCARY SA</span>
-                <span class="brand-sub">TAPIS NOUÃ‰S MAIN-ARTISANAT â€” GESTION FACTURES & DEVIS</span>
+                <span class="brand-sub">TAPIS NOUÉS MAIN-ARTISANAT — GESTION FACTURES & DEVIS</span>
             </div>
         </div>
         <div class="header-actions">
             <a href="form.html?type=devis" class="btn btn-dark">+ Nouveau devis</a>
             <a href="form.html?type=facture" class="btn btn-primary" style="border-color:var(--accent)">+ Nouvelle facture</a>
-            <button class="btn btn-sm" onclick="logout()">DÃ©connexion</button>
+            <button class="btn btn-sm" onclick="logout()">Déconnexion</button>
         </div>
     </header>
 
@@ -33,29 +33,29 @@
                 <button class="tab" data-t="facture" onclick="charge('facture')">Factures</button>
             </div>
             <div class="filters">
-                <input type="text" id="search" placeholder="Rechercher (nÂ°, client, ICE)...">
+                <input type="text" id="search" placeholder="Rechercher (n°, client, ICE)...">
                 <select id="filterEtat">
-                    <option value="">Tous les Ã©tats</option>
+                    <option value="">Tous les états</option>
                     <option value="brouillon">Brouillon</option>
-                    <option value="emise">Ã‰mise</option>
-                    <option value="validee">ValidÃ©e</option>
-                    <option value="annulee">AnnulÃ©e</option>
+                    <option value="emise">Émise</option>
+                    <option value="validee">Validée</option>
+                    <option value="annulee">Annulée</option>
                 </select>
                 <button class="btn btn-sm" onclick="loadDocs()">Filtrer</button>
-                <button class="btn btn-sm btn-primary" id="excelBtn" onclick="exportExcel()">ðŸ“¥ Excel</button>
+                <button class="btn btn-sm btn-primary" id="excelBtn" onclick="exportExcel()">📥 Excel</button>
             </div>
             <div class="table-container">
                 <table>
                     <thead>
                         <tr>
                             <th>Type</th>
-                            <th>NÂ°</th>
+                            <th>N°</th>
                             <th>Date</th>
                             <th>Client</th>
                             <th>ICE</th>
                             <th>Type client</th>
                             <th>Total (DHS)</th>
-                            <th>Ã‰tat</th>
+                            <th>État</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
