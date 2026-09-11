@@ -82,6 +82,7 @@ function newLine(data) {
         if (cfg.select) {
             el = document.createElement('select');
             el.className = 'small';
+            if (cfg.key === 'type_ligne') el.title = 'Choisir : S, M ou L';
             cfg.select.forEach(([v, l]) => {
                 const o = document.createElement('option');
                 o.value = v; o.textContent = l;
