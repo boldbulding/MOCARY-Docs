@@ -1,33 +1,33 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document - MOCARY SA</title>
-    <link rel="stylesheet" href="css/print.css">
+    <link rel="stylesheet" href="css/print.css?v=3">
 </head>
 <body class="print-body">
     <div class="toolbar no-print">
-        <button onclick="window.print()" class="btn-print">🖨 Imprimer</button>
-        <button onclick="window.history.back()" class="btn-ghost">← Retour</button>
+        <button onclick="window.print()" class="btn-print">ðŸ–¨ Imprimer</button>
+        <button onclick="window.history.back()" class="btn-ghost">â† Retour</button>
         <span class="spacer"></span>
-        <a href="form.html?id=" id="editLink" class="btn-ghost" style="text-decoration:none;">✏️ Modifier</a>
+        <a href="form.html?id=" id="editLink" class="btn-ghost" style="text-decoration:none;">âœï¸ Modifier</a>
     </div>
 
     <div class="sheet" id="sheet">
-        <!-- En-tête -->
+        <!-- En-tÃªte -->
         <div class="doc-header">
             <div class="co-header">
                 <div class="logo">
                     <div class="logo-mark">M</div>
                     <div class="logo-text">
                         <span class="logo-name">MOCARY SA</span>
-                        <span class="logo-sub">TAPIS NOUÉS MAIN-ARTISANAT</span>
+                        <span class="logo-sub">TAPIS NOUÃ‰S MAIN-ARTISANAT</span>
                     </div>
                 </div>
                 <div class="co-lignes">
-                    <div>BD EZZARBIA-SALÉ - BP 615 TABRIQUET SALÉ-MOROCCO</div>
-                    <div>Tél : +212 537 808 749 &nbsp;|&nbsp; Fax : +212 537 832 957</div>
+                    <div>BD EZZARBIA-SALÃ‰ - BP 615 TABRIQUET SALÃ‰-MOROCCO</div>
+                    <div>TÃ©l : +212 537 808 749 &nbsp;|&nbsp; Fax : +212 537 832 957</div>
                     <div>Email : mocarysa@gmail.com</div>
                     <div>SA Capital 16 500 000 DHS</div>
                 </div>
@@ -37,11 +37,11 @@
             </div>
         </div>
 
-        <!-- Numéro + Date + Client -->
+        <!-- NumÃ©ro + Date + Client -->
         <div class="doc-info">
             <div class="info-left">
                 <div class="info-row"><span class="lbl">DESTINATAIRE</span> <strong id="clientNom"></strong></div>
-                <div class="info-row" id="clientIceRow"><span class="lbl">ICE N° :</span> <strong id="clientIce"></strong></div>
+                <div class="info-row" id="clientIceRow"><span class="lbl">ICE NÂ° :</span> <strong id="clientIce"></strong></div>
                 <div class="info-row" id="clientAdresseRow" style="display:none"><span class="lbl">ADR :</span> <strong id="clientAdresse"></strong></div>
                 <div class="type-client-box">
                     <span class="tcb-label">TYPE DE CLIENT</span>
@@ -50,7 +50,7 @@
                 </div>
             </div>
             <div class="info-right">
-                <div class="info-row"><span class="lbl">N° :</span> <strong id="numero"></strong></div>
+                <div class="info-row"><span class="lbl">NÂ° :</span> <strong id="numero"></strong></div>
                 <div class="info-row"><span class="lbl">Date :</span> <strong id="dateDoc"></strong></div>
             </div>
         </div>
@@ -59,12 +59,12 @@
         <table class="doc-table">
             <thead>
                 <tr>
-                    <th style="width:30%">Désignation</th>
+                    <th style="width:30%">DÃ©signation</th>
                     <th style="width:5%">TYPE</th>
                     <th style="width:6%">QTE</th>
                     <th style="width:8%">LONG<br>(m)</th>
                     <th style="width:8%">LARG<br>(m)</th>
-                    <th style="width:12%">SURF<br>(m²)</th>
+                    <th style="width:12%">SURF<br>(mÂ²)</th>
                     <th style="width:17%">P.U. EN<br>DHS</th>
                     <th style="width:14%">EN DHS</th>
                 </tr>
@@ -80,7 +80,7 @@
                     <td id="tvaDhs" class="val-total"></td>
                 </tr>
                 <tr class="total-general">
-                    <td colspan="7" class="lbl-total">TOTAL GÉNÉRAL EN DIRHAMS</td>
+                    <td colspan="7" class="lbl-total">TOTAL GÃ‰NÃ‰RAL EN DIRHAMS</td>
                     <td id="totalGeneral" class="val-total"></td>
                 </tr>
             </tfoot>
@@ -97,32 +97,32 @@
                 <div class="important" id="mentionImportant"></div>
             </div>
             <div class="conditions">
-                <div id="condPaiement"><strong>Conditions de paiement :</strong> 60 % à la commande / 40 % à la livraison</div>
+                <div id="condPaiement"><strong>Conditions de paiement :</strong> 60 % Ã  la commande / 40 % Ã  la livraison</div>
                 <div id="condValidite"><strong>Devis valable 1 mois</strong></div>
             </div>
             <div class="reglement">
-                <span><strong>Mode de règlement :</strong></span>
-                <label class="case"><input type="checkbox"> Chèque</label>
-                <label class="case"><input type="checkbox"> Espèces</label>
-                <label class="case"><input type="checkbox"> Crédit</label>
+                <span><strong>Mode de rÃ¨glement :</strong></span>
+                <label class="case"><input type="checkbox"> ChÃ¨que</label>
+                <label class="case"><input type="checkbox"> EspÃ¨ces</label>
+                <label class="case"><input type="checkbox"> CrÃ©dit</label>
             </div>
         </div>
 
-        <!-- Pied de page société -->
+        <!-- Pied de page sociÃ©tÃ© -->
         <div class="doc-pied">
             <div class="pied-ligne">
-                <span>TAPIS NOUÉS MAIN-ARTISANAT - BD EZZARBIA SALÉ - BP 615 TABRIQUET SALÉ-MOROCCO</span>
+                <span>TAPIS NOUÃ‰S MAIN-ARTISANAT - BD EZZARBIA SALÃ‰ - BP 615 TABRIQUET SALÃ‰-MOROCCO</span>
             </div>
             <div class="pied-ligne small">
-                Tél : +212 537 808 749 - Fax : +212 537 832 957 - Email : mocarysa@gmail.com
+                TÃ©l : +212 537 808 749 - Fax : +212 537 832 957 - Email : mocarysa@gmail.com
             </div>
             <div class="pied-ligne small">
-                SA Capital 16 500 000 DHS - TP : 28600300 - RC : 143 SALÉ DA 1291 - IF : 03355172 - ICE : 001544061000080
+                SA Capital 16 500 000 DHS - TP : 28600300 - RC : 143 SALÃ‰ DA 1291 - IF : 03355172 - ICE : 001544061000080
             </div>
         </div>
     </div>
 
-    <script src="js/api.js"></script>
-    <script src="js/print.js"></script>
+    <script src="js/api.js?v=3"></script>
+    <script src="js/print.js?v=3"></script>
 </body>
 </html>
