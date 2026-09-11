@@ -66,11 +66,11 @@ function newLine(data) {
 
     const fields = [
         { key: 'designation', cls: '' },
+        { key: 'type_ligne', cls: 'small', select: [['', 'S/M/L'], ['S', 'S'], ['M', 'M'], ['L', 'L']] },
         { key: 'qte', cls: 'small', type: 'number', ph: 'QTE' },
         { key: 'longueur', cls: 'small', type: 'number', step: '0.01', ph: 'LONG' },
         { key: 'largeur', cls: 'small', type: 'number', step: '0.01', ph: 'LARG' },
         { key: 'surface', cls: 'small', type: 'number', step: '0.01', ph: 'SURF' },
-        { key: 'type_ligne', cls: 'small', select: [['', 'S/M/L'], ['S', 'S'], ['M', 'M'], ['L', 'L']] },
         { key: 'pu', cls: 'small pu-inp', type: 'number', step: '0.01', ph: 'P.U.' },
         { key: 'montant', cls: 'small mt', type: 'number', step: '0.01', ph: 'Montant' }
     ];
@@ -134,12 +134,12 @@ function getInputs(tr) {
     const cells = tr.cells;
     return {
         designation: cells[0] ? cells[0].querySelector('input').value : '',
-        qte: cells[1] ? norm(cells[1].querySelector('input').value) : 0,
-        longueur: cells[2] ? norm(cells[2].querySelector('input').value) : 0,
-        largeur: cells[3] ? norm(cells[3].querySelector('input').value) : 0,
-        surfaceInp: cells[4] ? cells[4].querySelector('input') : null,
-        surface: cells[4] ? norm(cells[4].querySelector('input').value) : 0,
-        type_ligne: cells[5] ? cells[5].querySelector('select').value : '',
+        type_ligne: cells[1] ? cells[1].querySelector('select').value : '',
+        qte: cells[2] ? norm(cells[2].querySelector('input').value) : 0,
+        longueur: cells[3] ? norm(cells[3].querySelector('input').value) : 0,
+        largeur: cells[4] ? norm(cells[4].querySelector('input').value) : 0,
+        surfaceInp: cells[5] ? cells[5].querySelector('input') : null,
+        surface: cells[5] ? norm(cells[5].querySelector('input').value) : 0,
         pu: cells[6] ? cells[6].querySelector('.pu-inp') : null,
         montant: cells[7] ? cells[7].querySelector('input') : null
     };
