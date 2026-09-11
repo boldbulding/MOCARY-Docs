@@ -102,6 +102,7 @@ router.get('/excel/list', async (req, res, next) => {
             ws.eachRow((row) => {
                 row.eachCell((cell) => {
                     cell.font = Object.assign({ name: POLICE }, cell.font || {});
+                    if (typeof cell.value === 'number') cell.numFmt = '0.00';
                 });
             });
         }

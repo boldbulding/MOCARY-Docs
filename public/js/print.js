@@ -33,7 +33,7 @@ async function charger() {
         const cells = [
             l.designation || '',
             l.type_ligne || '',
-            l.qte,
+            fmt(l.qte),
             fmt(l.longueur),
             fmt(l.largeur),
             fmt(l.surface),

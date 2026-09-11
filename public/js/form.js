@@ -58,7 +58,7 @@ function newLine(data) {
         const inp = document.createElement('input');
         inp.type = cfg.type || 'text';
         inp.className = (cfg.small ? 'small ' : '') + (cfg.mt ? 'mt' : '');
-        if (cfg.step) inp.step = cfg.step; else inp.step = 'any';
+        if (cfg.dec) { inp.inputMode = 'decimal'; inp.autocomplete = 'off'; }
         inp.placeholder = cfg.ph || '';
         if (value !== undefined && value !== null) inp.value = value;
         return inp;
@@ -67,12 +67,12 @@ function newLine(data) {
     const fields = [
         { key: 'designation', cls: '' },
         { key: 'type_ligne', cls: 'small', select: [['', 'S/M/L'], ['S', 'S'], ['M', 'M'], ['L', 'L']] },
-        { key: 'qte', cls: 'small', type: 'number', ph: 'QTE' },
-        { key: 'longueur', cls: 'small', type: 'number', step: '0.01', ph: 'LONG' },
-        { key: 'largeur', cls: 'small', type: 'number', step: '0.01', ph: 'LARG' },
-        { key: 'surface', cls: 'small', type: 'number', step: '0.01', ph: 'SURF' },
-        { key: 'pu', cls: 'small pu-inp', type: 'number', step: '0.01', ph: 'P.U.' },
-        { key: 'montant', cls: 'small mt', type: 'number', step: '0.01', ph: 'Montant' }
+        { key: 'qte', cls: 'small', dec: true, ph: 'QTE' },
+        { key: 'longueur', cls: 'small', dec: true, ph: 'LONG' },
+        { key: 'largeur', cls: 'small', dec: true, ph: 'LARG' },
+        { key: 'surface', cls: 'small', dec: true, ph: 'SURF' },
+        { key: 'pu', cls: 'small pu-inp', dec: true, ph: 'P.U.' },
+        { key: 'montant', cls: 'small mt', dec: true, ph: 'Montant' }
     ];
 
     let idx = 0;
@@ -108,6 +108,9 @@ function newLine(data) {
             } else if (cfg.key === 'montant') {
                 el.addEventListener('input', () => { el.dataset.manual = '1'; recalc(tr); });
             }
+        }
+        if (cfg.dec && el.tagName === 'INPUT') {
+            el.addEventListener('blur', () => { const v = norm(el.value); el.value = v ? fmt(v) : ''; });
         }
         td.appendChild(el);
         tr.appendChild(td);
@@ -152,7 +155,7 @@ function recalc(tr) {
         ? Math.round(qte * f.longueur * f.largeur * 100) / 100
         : null;
     if (surfAuto !== null) {
-        f.surfaceInp.value = surfAuto;
+        f.surfaceInp.value = fmt(surfAuto);
         f.surfaceInp.dataset.manual = '';
     } else if (!f.surfaceInp.dataset.manual) {
         f.surfaceInp.value = '';
@@ -161,7 +164,7 @@ function recalc(tr) {
     const pu = norm(tr.puValues[activeType]);
     const computed = (surface > 0 && pu > 0) ? Math.round(surface * pu * 100) / 100 : 0;
     if (!f.montant.dataset.manual) {
-        f.montant.value = computed ? computed : '';
+        f.montant.value = computed ? fmt(computed) : '';
     }
     recalcAll();
 }
