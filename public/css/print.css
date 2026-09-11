@@ -1,11 +1,11 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
-body { font-family: 'Segoe UI', Arial, sans-serif; background: #e5e7eb; color: #111; }
+body { font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', serif; background: #e5e7eb; color: #111; }
 
-.toolbar { background: #1f2937; color: #fff; padding: 0.75rem 1rem; display: flex; gap: 0.75rem; align-items: center; position: sticky; top: 0; z-index: 50; flex-wrap: wrap; }
+.toolbar { background: #1f2937; color: #fff; padding: 0.75rem 1rem; display: flex; gap: 0.75rem; align-items: center; position: sticky; top: 0; z-index: 50; flex-wrap: wrap; font-family: 'Cormorant Garamond', Georgia, serif; }
 .toolbar .spacer { flex: 1; }
 .btn-print, .btn-ghost { color: #fff; text-decoration: none; display: inline-flex; align-items: center; gap: 0.4rem; }
-.btn-print { background: #2563eb; color: #fff; border: none; padding: 0.6rem 1.2rem; border-radius: 6px; font-weight: 600; cursor: pointer; }
+.btn-print { background: #2563eb; color: #fff; border: none; padding: 0.6rem 1.2rem; border-radius: 6px; font-weight: 700; cursor: pointer; }
 .btn-print:hover { background: #1d4ed8; }
 .btn-ghost { background: transparent; border: 1px solid #9ca3af; padding: 0.6rem 1rem; border-radius: 6px; }
 
@@ -35,14 +35,16 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #e5e7eb; color: #
 .logo-mark {
     width: 46px; height: 46px; border: 2px solid #111; border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
-    font-size: 1.6rem; font-weight: 800; color: #111;
+    font-family: 'Cinzel', serif;
+    font-size: 1.6rem; font-weight: 700; color: #111;
 }
 .logo-text { display: flex; flex-direction: column; }
-.logo-name { font-size: 1.4rem; font-weight: 800; letter-spacing: 2px; color: #111; }
-.logo-sub { font-size: 0.62rem; color: #111; font-weight: 600; letter-spacing: 0.5px; }
-.co-lignes { font-size: 0.62rem; line-height: 1.35; color: #111; border-left: 1px solid #111; padding-left: 0.7rem; }
+.logo-name { font-family: 'Cinzel', serif; font-size: 1.4rem; font-weight: 700; letter-spacing: 2px; color: #111; }
+.logo-sub { font-size: 0.66rem; color: #111; font-weight: 600; letter-spacing: 1px; }
+.co-lignes { font-size: 0.66rem; line-height: 1.4; color: #111; border-left: 1px solid #111; padding-left: 0.7rem; }
 .doc-titre { align-self: center; }
 .doc-titre span {
+    font-family: 'Cinzel', serif;
     font-size: 1.7rem; font-weight: 800; letter-spacing: 4px; color: #111;
     border: 2px solid #111; padding: 0.35rem 1.6rem;
 }
@@ -52,7 +54,7 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #e5e7eb; color: #
     display: flex; justify-content: space-between; align-items: flex-start;
     margin: 0.9rem 0 0.4rem; gap: 1rem;
 }
-.info-row { display: flex; gap: 0.5rem; align-items: baseline; margin-bottom: 0.3rem; font-size: 0.85rem; }
+.info-row { display: flex; gap: 0.5rem; align-items: baseline; margin-bottom: 0.3rem; font-size: 0.9rem; }
 .lbl { font-weight: 700; }
 .info-left { text-transform: uppercase; flex: 1; }
 .info-right { text-transform: uppercase; text-align: right; }
@@ -60,9 +62,9 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #e5e7eb; color: #
 /* Case à cocher particulier / revendeur */
 .type-client-box {
     border: 1.5px solid #111; margin-top: 0.5rem; padding: 0.35rem 0.6rem;
-    display: flex; gap: 1.6rem; align-items: center; font-size: 0.8rem; font-weight: 700;
+    display: flex; gap: 1.6rem; align-items: center; font-size: 0.85rem; font-weight: 700;
 }
-.type-client-box .tcb-label { font-weight: 800; letter-spacing: 0.5px; }
+.type-client-box .tcb-label { font-family: 'Cinzel', serif; font-weight: 700; letter-spacing: 1px; }
 .type-client-box .case { display: inline-flex; align-items: center; gap: 0.3rem; }
 .type-client-box .box {
     width: 0.85rem; height: 0.85rem; border: 1.5px solid #111; display: inline-flex;
@@ -73,24 +75,25 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #e5e7eb; color: #
 .doc-table { width: 100%; border-collapse: collapse; margin-top: 0.4rem; }
 .doc-table th {
     border: 1px solid #111; background: #fff; color: #111;
-    font-size: 0.62rem; font-weight: 700; text-align: center; padding: 0.35rem 0.2rem;
-    line-height: 1.25;
+    font-family: 'Cinzel', serif;
+    font-size: 0.64rem; font-weight: 700; text-align: center; padding: 0.35rem 0.2rem;
+    line-height: 1.25; letter-spacing: 0.5px;
 }
 .doc-table td {
-    border: 1px solid #111; font-size: 0.75rem; text-align: center; padding: 0.4rem 0.25rem;
+    border: 1px solid #111; font-size: 0.8rem; text-align: center; padding: 0.4rem 0.25rem;
 }
 .doc-table tbody td:first-child { text-align: left; }
-.total-row td, .total-general td { font-weight: 800; font-size: 0.8rem; }
+.total-row td, .total-general td { font-family: 'Cinzel', serif; font-weight: 800; font-size: 0.82rem; }
 .total-row td { height: 2rem; }
 .total-general td { height: 2.2rem; border-top: 2px solid #111; }
 .lbl-total { text-align: right !important; padding-right: 0.5rem; }
-.val-total { font-size: 0.9rem; }
+.val-total { font-size: 0.95rem; }
 
 /* Texte bas */
-.doc-footer-text { margin-top: 0.6rem; font-size: 0.78rem; flex: 1; }
+.doc-footer-text { margin-top: 0.6rem; font-size: 0.82rem; flex: 1; }
 .somme-lettres {
     margin: 0.5rem 0; padding: 0.5rem; border: 1px solid #111;
-    font-weight: 600; letter-spacing: 0.3px; text-transform: uppercase;
+    font-weight: 700; letter-spacing: 0.3px; text-transform: uppercase; font-size: 0.82rem;
 }
 .mentions { margin-top: 0.4rem; line-height: 1.5; }
 .mentions div { font-weight: 600; }
@@ -104,10 +107,11 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #e5e7eb; color: #
 /* Pied */
 .doc-pied {
     border-top: 2px solid #111; padding-top: 0.5rem; margin-top: 1rem;
-    text-align: center; font-size: 0.68rem; line-height: 1.5;
+    text-align: center; font-size: 0.72rem; line-height: 1.5;
+    font-family: 'Cinzel', serif;
     color: #111;
 }
-.pied-ligne.small { font-size: 0.62rem; }
+.pied-ligne.small { font-size: 0.64rem; }
 
 @media print {
     body { background: #fff; }

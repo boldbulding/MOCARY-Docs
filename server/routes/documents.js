@@ -93,8 +93,18 @@ router.get('/excel/list', async (req, res, next) => {
 
         const labels = { brouillon: 'Brouillon', emise: 'Émise', validee: 'Validée', annulee: 'Annulée' };
         const typeLabels = { particulier: 'Particulier', revendeur: 'Revendeur' };
+        const POLICE = 'Georgia';
 
         const workbook = new ExcelJS.Workbook();
+        workbook.creator = 'MOCARY SA';
+
+        function finale(ws) {
+            ws.eachRow((row) => {
+                row.eachCell((cell) => {
+                    cell.font = Object.assign({ name: POLICE }, cell.font || {});
+                });
+            });
+        }
 
         const sheet = workbook.addWorksheet('Documents');
         sheet.columns = [
@@ -115,6 +125,7 @@ router.get('/excel/list', async (req, res, next) => {
             client_nom: d.client_nom || '', client_ice: d.client_ice || '',
             total_dhs: d.total_dhs, etat: labels[d.etat] || d.etat
         }));
+        finale(sheet);
 
         const lig = workbook.addWorksheet('Lignes');
         lig.columns = [
@@ -146,6 +157,7 @@ router.get('/excel/list', async (req, res, next) => {
                 montant: l.montant
             }));
         }
+        finale(lig);
 
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         res.setHeader('Content-Disposition', 'attachment; filename=mocary_factures_devis.xlsx');
