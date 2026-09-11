@@ -133,7 +133,7 @@ router.get('/excel/list', async (req, res, next) => {
             { header: 'Type', key: 'type', width: 10 },
             { header: 'Client', key: 'client_nom', width: 24 },
             { header: 'Désignation', key: 'designation', width: 28 },
-            { header: 'TYPE', key: 'type_ligne', width: 7 },
+            { header: 'TAILLE', key: 'type_ligne', width: 7 },
             { header: 'QTE', key: 'qte', width: 7 },
             { header: 'LONG (m)', key: 'longueur', width: 10 },
             { header: 'LARG (m)', key: 'largeur', width: 10 },

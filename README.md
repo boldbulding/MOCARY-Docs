@@ -86,4 +86,4 @@ Chaque ligne de document contient deux prix :
 Calcul des lignes :
 - **SURF = QTE × LONG × LARG** (en m², arrondi à 2 décimales)
 - **MONTANT = SURF × P.U.**
-- Colonne **TYPE** : l'utilisateur choisit **S, M ou L**
+- Colonne **TAILLE** : l'utilisateur choisit **S, M ou L**
