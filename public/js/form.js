@@ -70,7 +70,7 @@ function newLine(data) {
         { key: 'longueur', cls: 'small', type: 'number', step: '0.01', ph: 'LONG' },
         { key: 'largeur', cls: 'small', type: 'number', step: '0.01', ph: 'LARG' },
         { key: 'surface', cls: 'small', type: 'number', step: '0.01', ph: 'SURF' },
-        { key: 'type_ligne', cls: 'small', select: [['', '-'], ['S', 'S'], ['M', 'M'], ['L', 'L']] },
+        { key: 'type_ligne', cls: 'small', type: 'text', maxlength: 1, ph: 'S/M/L' },
         { key: 'pu', cls: 'small pu-inp', type: 'number', step: '0.01', ph: 'P.U.' },
         { key: 'montant', cls: 'small mt', type: 'number', step: '0.01', ph: 'Montant' }
     ];
@@ -106,7 +106,12 @@ function newLine(data) {
                 el.addEventListener('input', () => { el.dataset.manual = '1'; recalc(tr); });
             }
         }
-        if (cfg.key === 'type_ligne') el.addEventListener('change', () => recalc(tr));
+        if (cfg.maxlength) el.maxLength = cfg.maxlength;
+        if (cfg.key === 'type_ligne') {
+            el.inputMode = 'text';
+            el.title = 'Taper : S, M ou L';
+        }
+        if (cfg.key === 'type_ligne') el.addEventListener('input', () => { el.value = el.value.toUpperCase(); recalc(tr); });
         td.appendChild(el);
         tr.appendChild(td);
         idx++;
@@ -137,7 +142,7 @@ function getInputs(tr) {
         largeur: cells[3] ? norm(cells[3].querySelector('input').value) : 0,
         surfaceInp: cells[4] ? cells[4].querySelector('input') : null,
         surface: cells[4] ? norm(cells[4].querySelector('input').value) : 0,
-        type_ligne: cells[5] ? cells[5].querySelector('select').value : '',
+        type_ligne: cells[5] ? cells[5].querySelector('input').value : '',
         pu: cells[6] ? cells[6].querySelector('.pu-inp') : null,
         montant: cells[7] ? cells[7].querySelector('input') : null
     };
