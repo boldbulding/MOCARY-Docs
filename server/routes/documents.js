@@ -9,10 +9,20 @@ const norm = (s) => parseFloat(String(s).replace(',', '.')) || 0;
 const normInt = (s) => Math.round(norm(s));
 const arrondi2 = (x) => Math.round(x * 100) / 100;
 
-// Calcule le montant d'une ligne selon l'unité choisie (m2 ou pièce)
+// Montant d'une ligne : SURF × P.U. avec SURF = QTE × LONG × LARG (ou surface saisie)
 function montantLigne(l) {
-    if (l.unite === 'piece') return arrondi2((l.nb_pieces || 1) * (l.qte || 1) * norm(l.pu));
-    return arrondi2((l.longueur || 0) * (l.largeur || 0) * (l.qte || 1) * norm(l.pu));
+    const pu = norm(l.pu);
+    let surface;
+    if ((l.longueur || 0) > 0 && (l.largeur || 0) > 0) surface = (l.longueur || 0) * (l.largeur || 0) * (l.qte || 1);
+    else if ((l.surface || 0) > 0) surface = l.surface;
+    else surface = 0;
+    return arrondi2(surface * pu);
+}
+
+// Surface d'une ligne : QTE × LONG × LARG (ou surface saisie)
+function surfaceLigne(l) {
+    if ((l.longueur || 0) > 0 && (l.largeur || 0) > 0) return arrondi2((l.longueur || 0) * (l.largeur || 0) * (l.qte || 1));
+    return arrondi2(norm(l.surface));
 }
 
 async function genererNumero(type) {
@@ -116,9 +126,7 @@ router.get('/excel/list', async (req, res, next) => {
             { header: 'QTE', key: 'qte', width: 7 },
             { header: 'LONG (m)', key: 'longueur', width: 10 },
             { header: 'LARG (m)', key: 'largeur', width: 10 },
-            { header: 'Surf', key: 'surface', width: 10 },
-            { header: 'N° PIÈCES', key: 'nb_pieces', width: 10 },
-            { header: 'Unité', key: 'unite', width: 9 },
+            { header: 'Surf (m²)', key: 'surface', width: 10 },
             { header: 'P.U. Particulier', key: 'pu_particulier', width: 15 },
             { header: 'P.U. Revendeur', key: 'pu_revendeur', width: 15 },
             { header: 'P.U. appliqué', key: 'pu_applique', width: 13 },
@@ -132,8 +140,7 @@ router.get('/excel/list', async (req, res, next) => {
                 type: d.type === 'devis' ? 'DEVIS' : 'FACTURE',
                 client_nom: d.client_nom || '',
                 designation: l.designation || '', type_ligne: l.type_ligne || '',
-                qte: l.qte, longueur: l.longueur, largeur: l.largeur, surface: l.surface, nb_pieces: l.nb_pieces,
-                unite: l.unite === 'piece' ? '/pièce' : '/m²',
+                qte: l.qte, longueur: l.longueur, largeur: l.largeur, surface: l.surface,
                 pu_particulier: l.pu_particulier, pu_revendeur: l.pu_revendeur,
                 pu_applique: d.client_type === 'revendeur' ? l.pu_revendeur : l.pu_particulier,
                 montant: l.montant
@@ -212,19 +219,17 @@ router.post('/', async (req, res, next) => {
             const longueur = norm(l.longueur);
             const largeur = norm(l.largeur);
             const qte = normInt(l.qte) || 1;
-            const nb_pieces = normInt(l.nb_pieces) || 1;
-            const unite = l.unite === 'piece' ? 'piece' : 'm2';
-            const surface = (longueur > 0 && largeur > 0) ? arrondi2(longueur * largeur) : (norm(l.surface));
+            const surface = surfaceLigne({ longueur, largeur, qte, surface: l.surface });
             const puP = norm(l.pu_particulier);
             const puR = norm(l.pu_revendeur);
             const pu = ct === 'revendeur' ? puR : puP;
-            const montant = montantLigne({ longueur, largeur, qte, nb_pieces, unite, pu });
+            const montant = montantLigne({ longueur, largeur, qte, surface: l.surface, pu });
             await db.run(
                 `INSERT INTO document_ligne (doc_id, designation, type_ligne, qte, longueur, largeur, surface,
                                              nb_pieces, unite, pu_particulier, pu_revendeur, montant)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                 VALUES (?, ?, ?, ?, ?, ?, ?, 1, 'm2', ?, ?, ?)`,
                 docId, l.designation || '', l.type_ligne || '', qte, longueur, largeur, surface,
-                nb_pieces, unite, puP, puR, montant
+                puP, puR, montant
             );
         };
         for (const l of rows) await insertLigne(l);
@@ -271,20 +276,18 @@ router.put('/:id', async (req, res, next) => {
                 const longueur = norm(l.longueur);
                 const largeur = norm(l.largeur);
                 const qte = normInt(l.qte) || 1;
-                const nb_pieces = normInt(l.nb_pieces) || 1;
-                const unite = l.unite === 'piece' ? 'piece' : 'm2';
-                const surface = (longueur > 0 && largeur > 0) ? arrondi2(longueur * largeur) : (norm(l.surface));
+                const surface = surfaceLigne({ longueur, largeur, qte, surface: l.surface });
                 const puP = norm(l.pu_particulier);
                 const puR = norm(l.pu_revendeur);
                 const pu = ct === 'revendeur' ? puR : puP;
-                const montant = montantLigne({ longueur, largeur, qte, nb_pieces, unite, pu });
+                const montant = montantLigne({ longueur, largeur, qte, surface: l.surface, pu });
                 base += montant;
                 await db.run(
                     `INSERT INTO document_ligne (doc_id, designation, type_ligne, qte, longueur, largeur, surface,
                                                  nb_pieces, unite, pu_particulier, pu_revendeur, montant)
-                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                     VALUES (?, ?, ?, ?, ?, ?, ?, 1, 'm2', ?, ?, ?)`,
                     doc.id, l.designation || '', l.type_ligne || '', qte, longueur, largeur, surface,
-                    nb_pieces, unite, puP, puR, montant
+                    puP, puR, montant
                 );
             }
             total = appliquerTva(arrondi2(base), mentionVal, tvaPct);

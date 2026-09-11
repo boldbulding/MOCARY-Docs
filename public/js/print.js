@@ -30,7 +30,6 @@ async function charger() {
     doc.lignes.forEach(l => {
         const tr = document.createElement('tr');
         const pu = doc.client_type === 'revendeur' ? Number(l.pu_revendeur) : Number(l.pu_particulier);
-        const unite = l.unite === 'piece' ? ' / P' : ' / m²';
         const cells = [
             l.designation || '',
             l.type_ligne || '',
@@ -38,13 +37,12 @@ async function charger() {
             fmt(l.longueur),
             fmt(l.largeur),
             fmt(l.surface),
-            l.nb_pieces,
-            (isFinite(pu) && pu > 0) ? fmt(pu) + '<small>' + unite + '</small>' : '',
+            (isFinite(pu) && pu > 0) ? fmt(pu) + '<small>/ m²</small>' : '',
             fmt(l.montant)
         ];
         cells.forEach((c, i) => {
             const td = document.createElement('td');
-            if (i === 7) td.innerHTML = c;
+            if (i === 6) td.innerHTML = c;
             else td.textContent = c;
             if (c === l.designation) td.style.textAlign = 'left';
         });
@@ -104,7 +102,7 @@ async function charger() {
 
 function fmt(n) {
     if (n === null || n === undefined || isNaN(n)) return '';
-    return new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 2 }).format(n);
+    return new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n);
 }
 
 charger().catch(err => { showNotification(err.message, 'error'); });

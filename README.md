@@ -83,4 +83,7 @@ Chaque ligne de document contient deux prix :
 - `pu_particulier` — prix appliqué si la case **PARTICULIER** est cochée
 - `pu_revendeur` — prix appliqué si la case **REVENDEUR** est cochée
 
-Unité au choix par ligne : **/m²** (montant = SURF × QTE × P.U.) ou **/pièce** (montant = QTE × NB PIÈCES × P.U.).
+Calcul des lignes :
+- **SURF = QTE × LONG × LARG** (en m², arrondi à 2 décimales)
+- **MONTANT = SURF × P.U.**
+- Colonne **TYPE** : l'utilisateur choisit **S, M ou L**

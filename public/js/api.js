@@ -112,7 +112,7 @@ function formatMontant(m, devise = 'DHS') {
 
 function fmt(n) {
     if (n === null || n === undefined || n === '' || isNaN(n)) return '';
-    return new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 2 }).format(n);
+    return new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n);
 }
 
 function showNotification(message, type = 'success') {

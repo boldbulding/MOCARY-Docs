@@ -69,10 +69,8 @@ function newLine(data) {
         { key: 'qte', cls: 'small', type: 'number', ph: 'QTE' },
         { key: 'longueur', cls: 'small', type: 'number', step: '0.01', ph: 'LONG' },
         { key: 'largeur', cls: 'small', type: 'number', step: '0.01', ph: 'LARG' },
-        { key: 'surface', cls: 'small', type: 'number', step: '0.01', ph: 'Surf' },
-        { key: 'nb_pieces', cls: 'small', type: 'number', ph: 'Pièces' },
-        { key: 'type_ligne', cls: 'small', select: [['', '-'], ['S', 'S'], ['L', 'L']] },
-        { key: 'unite', cls: 'small', select: [['m2', '/m²'], ['piece', '/pièce']] },
+        { key: 'surface', cls: 'small', type: 'number', step: '0.01', ph: 'SURF' },
+        { key: 'type_ligne', cls: 'small', select: [['', '-'], ['S', 'S'], ['M', 'M'], ['L', 'L']] },
         { key: 'pu', cls: 'small pu-inp', type: 'number', step: '0.01', ph: 'P.U.' },
         { key: 'montant', cls: 'small mt', type: 'number', step: '0.01', ph: 'Montant' }
     ];
@@ -101,13 +99,12 @@ function newLine(data) {
                 el.addEventListener('input', () => recalc(tr));
             } else if (cfg.key === 'surface') {
                 el.addEventListener('input', () => { el.dataset.manual = '1'; recalc(tr); });
-            } else if (cfg.key === 'qte' || cfg.key === 'nb_pieces') {
+            } else if (cfg.key === 'qte') {
                 el.addEventListener('input', () => recalc(tr));
             } else if (cfg.key === 'montant') {
                 el.addEventListener('input', () => { el.dataset.manual = '1'; recalc(tr); });
             }
         }
-        if (cfg.key === 'unite') el.addEventListener('change', () => recalc(tr));
         if (cfg.key === 'type_ligne') el.addEventListener('change', () => recalc(tr));
         td.appendChild(el);
         tr.appendChild(td);
@@ -139,30 +136,29 @@ function getInputs(tr) {
         largeur: cells[3] ? norm(cells[3].querySelector('input').value) : 0,
         surfaceInp: cells[4] ? cells[4].querySelector('input') : null,
         surface: cells[4] ? norm(cells[4].querySelector('input').value) : 0,
-        nb_pieces: cells[5] ? norm(cells[5].querySelector('input').value) : 0,
-        type_ligne: cells[6] ? cells[6].querySelector('select').value : '',
-        unite: cells[7] ? cells[7].querySelector('select').value : 'm2',
-        pu: cells[8] ? cells[8].querySelector('.pu-inp') : null,
-        montant: cells[9] ? cells[9].querySelector('input') : null
+        type_ligne: cells[5] ? cells[5].querySelector('select').value : '',
+        pu: cells[6] ? cells[6].querySelector('.pu-inp') : null,
+        montant: cells[7] ? cells[7].querySelector('input') : null
     };
 }
 
 function recalc(tr) {
     const f = getInputs(tr);
     const qte = f.qte || 1;
-    if (f.longueur > 0 && f.largeur > 0) {
-        f.surfaceInp.value = Math.round(f.longueur * f.largeur * 100) / 100;
+    const surfAuto = (f.longueur > 0 && f.largeur > 0)
+        ? Math.round(qte * f.longueur * f.largeur * 100) / 100
+        : null;
+    if (surfAuto !== null) {
+        f.surfaceInp.value = surfAuto;
         f.surfaceInp.dataset.manual = '';
     } else if (!f.surfaceInp.dataset.manual) {
         f.surfaceInp.value = '';
     }
-    const surface = (f.longueur > 0 && f.largeur > 0) ? f.longueur * f.largeur : f.surface;
+    const surface = surfAuto !== null ? surfAuto : f.surface;
     const pu = norm(tr.puValues[activeType]);
-    let computed;
-    if (f.unite === 'piece') computed = qte * (f.nb_pieces || 1) * pu;
-    else computed = surface * qte * pu;
+    const computed = (surface > 0 && pu > 0) ? Math.round(surface * pu * 100) / 100 : 0;
     if (!f.montant.dataset.manual) {
-        f.montant.value = computed ? Math.round(computed * 100) / 100 : '';
+        f.montant.value = computed ? computed : '';
     }
     recalcAll();
 }
@@ -250,8 +246,6 @@ function collectData() {
             longueur: f.longueur,
             largeur: f.largeur,
             surface: f.surfaceInp.value ? norm(f.surfaceInp.value) : 0,
-            nb_pieces: Math.round(f.nb_pieces) || 1,
-            unite: f.unite,
             pu_particulier: tr.puValues.particulier,
             pu_revendeur: tr.puValues.revendeur
         });
@@ -329,8 +323,7 @@ function sauvegardeDraft() {
             const f = getInputs(tr);
             return {
                 designation: f.designation, qte: f.qte, longueur: f.longueur, largeur: f.largeur,
-                surface: f.surfaceInp.value || '', nb_pieces: f.nb_pieces,
-                type_ligne: f.type_ligne, unite: f.unite, montant: f.montant.value,
+                surface: f.surfaceInp.value || '', type_ligne: f.type_ligne, montant: f.montant.value,
                 pu_particulier: tr.puValues.particulier, pu_revendeur: tr.puValues.revendeur
             };
         })
@@ -433,7 +426,7 @@ function restaurerDraft(b) {
     (b.lignes || []).forEach(row => {
         const tr = newLine({
             designation: row.designation, qte: row.qte, longueur: row.longueur, largeur: row.largeur,
-            surface: row.surface, nb_pieces: row.nb_pieces, type_ligne: row.type_ligne, unite: row.unite,
+            surface: row.surface, type_ligne: row.type_ligne,
             pu_particulier: row.pu_particulier, pu_revendeur: row.pu_revendeur
         });
         const f = getInputs(tr);
