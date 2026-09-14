@@ -47,6 +47,15 @@ function appliquerTva(base, mention, tvaPct) {
 const TYPES = ['devis', 'facture'];
 const ETATS = ['brouillon', 'emise', 'validee', 'annulee'];
 
+// Applique la visibilité : l'admin voit tout, les autres voient uniquement leurs documents
+function filtreProprietaire(req, where, params) {
+    if (req.user && req.user.role !== 'admin') {
+        where += ' AND creator_id = ?';
+        params.push(req.user.id);
+    }
+    return where;
+}
+
 // Liste des documents (filtres : type, recherche, etat)
 router.get('/', async (req, res, next) => {
     try {
@@ -59,6 +68,7 @@ router.get('/', async (req, res, next) => {
             where += ' AND (numero LIKE ? OR client_nom LIKE ? OR client_ice LIKE ?)';
         }
         if (req.query.etat) { params.push(req.query.etat); where += ' AND etat = ?'; }
+        where = filtreProprietaire(req, where, params);
         const rows = await db.all(
             `SELECT * FROM document ${where} ORDER BY date_doc DESC, id DESC`,
             ...params
@@ -87,6 +97,7 @@ router.get('/excel/list', async (req, res, next) => {
             where += ' AND (numero LIKE ? OR client_nom LIKE ? OR client_ice LIKE ?)';
         }
         if (req.query.etat) { params.push(req.query.etat); where += ' AND etat = ?'; }
+        where = filtreProprietaire(req, where, params);
         const docs = await db.all(
             `SELECT * FROM document ${where} ORDER BY date_doc DESC, id DESC`,
             ...params
@@ -174,6 +185,9 @@ router.get('/:id', async (req, res, next) => {
         const id = parseInt(req.params.id, 10);
         const doc = await db.get('SELECT * FROM document WHERE id = ?', id);
         if (!doc) return res.status(404).json({ error: 'Document non trouvé' });
+        if (req.user && req.user.role !== 'admin' && Number(doc.creator_id) !== Number(req.user.id)) {
+            return res.status(404).json({ error: 'Document non trouvé' });
+        }
         const lignes = await db.all('SELECT * FROM document_ligne WHERE doc_id = ? ORDER BY id', id);
         res.json({ ...doc, lignes });
     } catch (e) { next(e); }
@@ -205,11 +219,12 @@ router.post('/', async (req, res, next) => {
             try {
                 result = await db.run(
                     `INSERT INTO document (type, numero, date_doc, client_type, client_nom, client_ice, client_adresse,
-                                           total_dhs, mode_paiement, montant_lettres, etat, mention, tva, qualite, remarque)
-                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id`,
+                                           total_dhs, creator_id, mode_paiement, montant_lettres, etat, mention, tva, qualite, remarque)
+                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id`,
                     type, finalNumero, date_doc, ct,
                     client_nom || '', client_ice || '', client_adresse || '',
                     totalTtc,
+                    req.user ? req.user.id : null,
                     mode_paiement || '',
                     montant_lettres || '',
                     ETATS.includes(etat) ? etat : 'brouillon',
@@ -343,6 +358,9 @@ router.delete('/:id', async (req, res, next) => {
         const id = parseInt(req.params.id, 10);
         const doc = await db.get('SELECT * FROM document WHERE id = ?', id);
         if (!doc) return res.status(404).json({ error: 'Document non trouvé' });
+        if (req.user && req.user.role !== 'admin' && Number(doc.creator_id) !== Number(req.user.id)) {
+            return res.status(404).json({ error: 'Document non trouvé' });
+        }
         await db.run('DELETE FROM document WHERE id = ?', doc.id);
         res.json({ message: 'Document supprimé' });
     } catch (e) { next(e); }

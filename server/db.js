@@ -32,6 +32,7 @@ function ddl(kind) {
     client_ice TEXT DEFAULT '',
     client_adresse TEXT DEFAULT '',
     total_dhs DOUBLE PRECISION NOT NULL DEFAULT 0,
+    creator_id INTEGER DEFAULT NULL,
     mode_paiement TEXT DEFAULT '',
     montant_lettres TEXT DEFAULT '',
     etat TEXT NOT NULL DEFAULT 'brouillon' CHECK(etat IN ('brouillon','emise','validee','annulee')),
@@ -87,6 +88,10 @@ async function init() {
         if (pgCols.rows.length === 0) {
             await conn.query("ALTER TABLE document ADD COLUMN mode_paiement TEXT DEFAULT ''");
         }
+        const pgCols2 = await conn.query("SELECT column_name FROM information_schema.columns WHERE table_name = 'document' AND column_name = 'creator_id'");
+        if (pgCols2.rows.length === 0) {
+            await conn.query("ALTER TABLE document ADD COLUMN creator_id INTEGER");
+        }
     } else {
         const { DatabaseSync } = require('node:sqlite');
         const dataDir = path.join(__dirname, '..', 'data');
@@ -100,6 +105,9 @@ async function init() {
         const cols = db.prepare('PRAGMA table_info(document)').all();
         if (!cols.some(c => c.name === 'mode_paiement')) {
             db.exec("ALTER TABLE document ADD COLUMN mode_paiement TEXT DEFAULT ''");
+        }
+        if (!cols.some(c => c.name === 'creator_id')) {
+            db.exec('ALTER TABLE document ADD COLUMN creator_id INTEGER');
         }
         conn = {
             all: (sql, ...p) => db.prepare(sql).all(...p),
@@ -155,14 +163,19 @@ async function ensureAdmin() {
     const email = String(process.env.ADMIN_EMAIL || 'admin@example.com').trim().toLowerCase();
     const motDePasse = process.env.ADMIN_PASSWORD || 'admin123';
     const existing = await get('SELECT id FROM utilisateur WHERE email = ?', email);
-    if (existing) return existing;
+    if (existing) {
+        await run('UPDATE document SET creator_id = ? WHERE creator_id IS NULL', existing.id);
+        return existing;
+    }
     const bcrypt = require('bcryptjs');
     const hash = bcrypt.hashSync(motDePasse, 10);
     await run(
         "INSERT INTO utilisateur (nom, email, mot_de_passe, role) VALUES (?, ?, ?, 'admin')",
         'Administrateur', email, hash
     );
-    return await get('SELECT id FROM utilisateur WHERE email = ?', email);
+    const admin = await get('SELECT id FROM utilisateur WHERE email = ?', email);
+    await run('UPDATE document SET creator_id = ? WHERE creator_id IS NULL', admin.id);
+    return admin;
 }
 
 async function ensureMocary() {
