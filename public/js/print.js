@@ -40,6 +40,7 @@ async function charger() {
             if (i === 6) td.innerHTML = c;
             else td.textContent = c;
             if (c === l.designation) td.style.textAlign = 'left';
+            tr.appendChild(td);
         });
         body.appendChild(tr);
     });
