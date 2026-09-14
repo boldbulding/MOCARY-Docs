@@ -3,6 +3,12 @@ const id = params.get('id');
 if (!id) { window.location.href = isLoggedIn() ? 'documents.html' : 'index.html'; throw new Error('no id'); }
 if (!checkAuth()) throw new Error('Non connecté');
 
+const userCourant = getUser();
+if (!(userCourant && userCourant.role === 'admin')) {
+    const editLink = document.getElementById('editLink');
+    if (editLink) editLink.style.display = 'none';
+}
+
 document.getElementById('editLink').href = 'form.html?id=' + Number(id);
 
 async function charger() {

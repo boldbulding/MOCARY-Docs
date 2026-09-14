@@ -1,6 +1,7 @@
 const express = require('express');
 const db = require('../db');
 const { nombreEnLettres } = require('../utils/nombre-lettres');
+const { requireAdmin } = require('../middleware/auth');
 const ExcelJS = require('exceljs');
 
 const router = express.Router();
@@ -263,7 +264,7 @@ router.post('/', async (req, res, next) => {
     } catch (e) { next(e); }
 });
 
-router.put('/:id', async (req, res, next) => {
+router.put('/:id', requireAdmin, async (req, res, next) => {
     try {
         const id = parseInt(req.params.id, 10);
         const doc = await db.get('SELECT * FROM document WHERE id = ?', id);

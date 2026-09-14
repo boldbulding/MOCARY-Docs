@@ -165,4 +165,17 @@ async function ensureAdmin() {
     return await get('SELECT id FROM utilisateur WHERE email = ?', email);
 }
 
-module.exports = { init, all, get, run, isUniqueError, USE_PG, ensureAdmin };
+async function ensureMocary() {
+    const email = 'mocary@example.com';
+    const existing = await get('SELECT id FROM utilisateur WHERE email = ?', email);
+    if (existing) return existing;
+    const bcrypt = require('bcryptjs');
+    const hash = bcrypt.hashSync('mocary345', 10);
+    await run(
+        "INSERT INTO utilisateur (nom, email, mot_de_passe, role) VALUES (?, ?, ?, 'employe')",
+        'Mocary', email, hash
+    );
+    return await get('SELECT id FROM utilisateur WHERE email = ?', email);
+}
+
+module.exports = { init, all, get, run, isUniqueError, USE_PG, ensureAdmin, ensureMocary };

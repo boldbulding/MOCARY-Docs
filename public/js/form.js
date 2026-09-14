@@ -4,6 +4,18 @@ const docTypeParam = ['devis', 'facture'].includes(params.get('type')) ? params.
 
 if (!checkAuth()) throw new Error('Non connecté');
 
+const userCourant = getUser();
+const estAdmin = !!(userCourant && userCourant.role === 'admin');
+
+if (editId && !estAdmin) {
+    const saveBtn = document.getElementById('saveBtn');
+    const printBtn = document.getElementById('printBtn');
+    if (saveBtn) saveBtn.style.display = 'none';
+    if (printBtn) printBtn.style.display = 'none';
+    const banniere = document.getElementById('lectureBanner');
+    if (banniere) banniere.style.display = '';
+}
+
 let activeType = 'particulier';
 let clientsListe = [];
 
@@ -302,6 +314,7 @@ function collectData() {
 let saveEnCours = false;
 async function save() {
     if (saveEnCours) return null;
+    if (editId && !estAdmin) { showNotification('Modification interdite : accès lecture seule', 'error'); return null; }
     const data = collectData();
     if (!data.date_doc) { showNotification('La date est requise', 'error'); return null; }
     if (data.lignes.length === 0) { showNotification('Ajoutez au moins une ligne', 'error'); return null; }

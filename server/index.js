@@ -18,6 +18,7 @@ const PORT = process.env.PORT || 4000;
     try {
         await db.init();
         await db.ensureAdmin();
+        await db.ensureMocary();
     } catch (e) {
         console.error('Erreur de connexion à la base de données :', e.message);
         process.exit(1);

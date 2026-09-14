@@ -16,4 +16,9 @@ function auth(req, res, next) {
     }
 }
 
-module.exports = { auth, bcrypt };
+function requireAdmin(req, res, next) {
+    if (req.user && req.user.role === 'admin') return next();
+    return res.status(403).json({ error: 'Accès réservé à l\'administrateur' });
+}
+
+module.exports = { auth, requireAdmin, bcrypt };

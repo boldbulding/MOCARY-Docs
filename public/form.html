@@ -79,6 +79,9 @@
             <h2 id="pageTitle">Nouveau document</h2>
 
             <form id="docForm">
+                <div id="lectureBanner" class="card" style="display:none;background:#fff8e1;color:#8a6d00;border:1px solid #f0c36d;padding:0.8rem 1rem;border-radius:.5rem;margin-bottom:1rem;">
+                    ⚠️ Accès <strong>lecture seule</strong> (compte mocary) : vous pouvez consulter ce document mais <strong>pas le modifier</strong>.
+                </div>
                 <div class="seg">
                     <label><input type="radio" name="type" value="facture" checked> <span class="badge badge-facture">FACTURE</span></label>
                     <label><input type="radio" name="type" value="devis"> <span class="badge badge-devis">DEVIS</span></label>
@@ -200,7 +203,7 @@
         </div>
     </main>
 
-    <script src="js/api.js?v=10"></script>
-    <script src="js/form.js?v=10"></script>
+    <script src="js/api.js?v=12"></script>
+    <script src="js/form.js?v=12"></script>
 </body>
 </html>

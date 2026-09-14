@@ -3,6 +3,9 @@ let reqSeq = 0;
 
 if (!checkAuth()) throw new Error('Non connecté');
 
+const userCourant = getUser();
+const estAdmin = !!(userCourant && userCourant.role === 'admin');
+
 const etatLabels = { brouillon: 'Brouillon', emise: 'Émise', validee: 'Validée', annulee: 'Annulée' };
 const clientTypeLabels = { particulier: 'Particulier', revendeur: 'Revendeur' };
 
@@ -58,7 +61,7 @@ async function loadDocs() {
             <td>${badge(d.etat)}</td>
             <td class="actions">
                 <a class="btn btn-sm btn-primary" href="print.html?id=${Number(d.id)}" title="Imprimer">🖨 Imprimer</a>
-                <a class="btn btn-sm" href="form.html?id=${Number(d.id)}" title="Modifier">✏️ Modifier</a>
+                ${estAdmin ? `<a class="btn btn-sm" href="form.html?id=${Number(d.id)}" title="Modifier">✏️ Modifier</a>` : ''}
                 <button class="btn btn-sm btn-danger" onclick="supprimer(${Number(d.id)})" title="Supprimer">🗑</button>
             </td>`;
         tbody.appendChild(tr);
