@@ -27,7 +27,8 @@ async function charger() {
 
     const body = document.getElementById('lignesBody');
     body.innerHTML = '';
-    doc.lignes.forEach(l => {
+    const lignes = doc.lignes || [];
+    lignes.forEach(l => {
         const tr = document.createElement('tr');
         const pu = doc.client_type === 'revendeur' ? Number(l.pu_revendeur) : Number(l.pu_particulier);
         const cells = [
@@ -105,4 +106,4 @@ function fmt(n) {
     return new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n);
 }
 
-charger().catch(err => { showNotification(err.message, 'error'); });
+charger().catch(err => { showNotification(err.message || 'Erreur', 'error'); });
