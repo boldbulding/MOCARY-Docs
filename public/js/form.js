@@ -7,6 +7,25 @@ if (!checkAuth()) throw new Error('Non connecté');
 let activeType = 'particulier';
 let clientsListe = [];
 
+function currentModePaiement() {
+    if (document.getElementById('mpCheque').checked) return 'cheque';
+    if (document.getElementById('mpCredit').checked) return 'credit';
+    return 'especes';
+}
+
+function setModePaiement(mode) {
+    document.getElementById('mpEspeces').checked = mode === 'especes';
+    document.getElementById('mpCheque').checked = mode === 'cheque';
+    document.getElementById('mpCredit').checked = mode === 'credit';
+}
+
+['mpEspeces', 'mpCheque', 'mpCredit'].forEach(id => {
+    document.getElementById(id).addEventListener('change', (e) => {
+        if (!e.target.checked) return;
+        setModePaiement(id === 'mpCheque' ? 'cheque' : id === 'mpCredit' ? 'credit' : 'especes');
+    });
+});
+
 function currentClientType() {
     return document.getElementById('ctRevendeur').checked ? 'revendeur' : 'particulier';
 }
@@ -269,6 +288,7 @@ function collectData() {
         client_nom: document.getElementById('client_nom').value,
         client_ice: document.getElementById('client_ice').value,
         client_adresse: document.getElementById('client_adresse').value,
+        mode_paiement: currentModePaiement(),
         etat: document.getElementById('etat').value,
         mention: document.getElementById('mention').value === '1',
         tva: norm(document.getElementById('tva').value),
@@ -319,6 +339,7 @@ function sauvegardeDraft() {
         client_nom: document.getElementById('client_nom').value,
         client_ice: document.getElementById('client_ice').value,
         client_adresse: document.getElementById('client_adresse').value,
+        mode_paiement: currentModePaiement(),
         etat: document.getElementById('etat').value,
         mention: document.getElementById('mention').value,
         tva: document.getElementById('tva').value,
@@ -386,6 +407,7 @@ async function majNumeroAuto() {
         document.getElementById('remarque').value = doc.remarque || '';
         setClientType(doc.client_type || 'particulier');
         activeType = doc.client_type || 'particulier';
+        setModePaiement(doc.mode_paiement || 'especes');
 
         if (brouillon) {
             restaurerDraft(brouillon);
@@ -418,6 +440,7 @@ function restaurerDraft(b) {
     document.querySelector(`input[name="type"][value="${b.type || 'facture'}"]`).checked = true;
     setClientType(b.client_type || 'particulier');
     activeType = b.client_type || 'particulier';
+    setModePaiement(b.mode_paiement || 'especes');
     document.getElementById('numero').value = b.numero || '';
     if (b.date_doc) document.getElementById('date_doc').value = b.date_doc;
     document.getElementById('client_id').value = b.client_id || '';

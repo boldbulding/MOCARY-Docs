@@ -19,12 +19,6 @@ async function charger() {
     document.getElementById('dateDoc').textContent = formatDate(doc.date_doc);
     document.title = (doc.type === 'devis' ? 'Devis' : 'Facture') + ' ' + doc.numero + ' - MOCARY SA';
 
-    // Case à cocher particulier / revendeur
-    const cbPart = document.getElementById('cbPart');
-    const cbRev = document.getElementById('cbRev');
-    cbPart.textContent = doc.client_type === 'particulier' ? '✓' : ' ';
-    cbRev.textContent = doc.client_type === 'revendeur' ? '✓' : ' ';
-
     const body = document.getElementById('lignesBody');
     body.innerHTML = '';
     const lignes = doc.lignes || [];

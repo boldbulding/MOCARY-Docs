@@ -32,6 +32,7 @@ function ddl(kind) {
     client_ice TEXT DEFAULT '',
     client_adresse TEXT DEFAULT '',
     total_dhs DOUBLE PRECISION NOT NULL DEFAULT 0,
+    mode_paiement TEXT DEFAULT '',
     montant_lettres TEXT DEFAULT '',
     etat TEXT NOT NULL DEFAULT 'brouillon' CHECK(etat IN ('brouillon','emise','validee','annulee')),
     mention INTEGER NOT NULL DEFAULT 0,
@@ -82,6 +83,10 @@ async function init() {
         for (const stmt of ddl('pg')) {
             await conn.query(stmt);
         }
+        const pgCols = await conn.query("SELECT column_name FROM information_schema.columns WHERE table_name = 'document' AND column_name = 'mode_paiement'");
+        if (pgCols.rows.length === 0) {
+            await conn.query("ALTER TABLE document ADD COLUMN mode_paiement TEXT DEFAULT ''");
+        }
     } else {
         const { DatabaseSync } = require('node:sqlite');
         const dataDir = path.join(__dirname, '..', 'data');
@@ -91,6 +96,10 @@ async function init() {
         db.exec('PRAGMA foreign_keys = ON;');
         for (const stmt of ddl('sqlite')) {
             db.exec(stmt);
+        }
+        const cols = db.prepare('PRAGMA table_info(document)').all();
+        if (!cols.some(c => c.name === 'mode_paiement')) {
+            db.exec("ALTER TABLE document ADD COLUMN mode_paiement TEXT DEFAULT ''");
         }
         conn = {
             all: (sql, ...p) => db.prepare(sql).all(...p),
