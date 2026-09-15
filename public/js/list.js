@@ -23,8 +23,10 @@ function badge(etat) {
 function buildQuery() {
     const q = new URLSearchParams();
     if (currentType) q.set('type', currentType);
+    const commercial = document.getElementById('filterCommercial').value.trim();
     const search = document.getElementById('search').value.trim();
     const etat = document.getElementById('filterEtat').value;
+    if (commercial) q.set('commercial', commercial);
     if (search) q.set('search', search);
     if (etat) q.set('etat', etat);
     return q.toString();
@@ -95,6 +97,7 @@ async function supprimer(id) {
 }
 
 document.getElementById('search').addEventListener('keyup', e => { if (e.key === 'Enter') loadDocs(); });
+document.getElementById('filterCommercial').addEventListener('keyup', e => { if (e.key === 'Enter') loadDocs(); });
 document.getElementById('filterEtat').addEventListener('change', loadDocs);
 
 loadDocs();

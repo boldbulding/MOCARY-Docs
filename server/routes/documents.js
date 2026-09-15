@@ -62,6 +62,11 @@ router.get('/', async (req, res, next) => {
         const params = [];
         let where = 'WHERE 1=1';
         if (req.query.type) { params.push(req.query.type); where += ' AND type = ?'; }
+        if (req.query.commercial) {
+            const c = '%' + String(req.query.commercial).slice(0, 100) + '%';
+            params.push(c);
+            where += ' AND client_nom LIKE ?';
+        }
         if (req.query.search) {
             const s = '%' + String(req.query.search).slice(0, 100) + '%';
             params.push(s, s, s);
@@ -91,6 +96,11 @@ router.get('/excel/list', async (req, res, next) => {
         const params = [];
         let where = 'WHERE 1=1';
         if (req.query.type) { params.push(req.query.type); where += ' AND type = ?'; }
+        if (req.query.commercial) {
+            const c = '%' + String(req.query.commercial).slice(0, 100) + '%';
+            params.push(c);
+            where += ' AND client_nom LIKE ?';
+        }
         if (req.query.search) {
             const s = '%' + String(req.query.search).slice(0, 100) + '%';
             params.push(s, s, s);
