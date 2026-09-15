@@ -38,6 +38,22 @@ function setModePaiement(mode) {
     });
 });
 
+function collectTypeProduit() {
+    return {
+        tisse: document.getElementById('tpTisse').checked,
+        noue: document.getElementById('tpNoue').checked,
+        hand_tuft: document.getElementById('tpHandTuft').checked,
+        stock: document.getElementById('tpStock').checked
+    };
+}
+
+function setTypeProduit(d) {
+    document.getElementById('tpTisse').checked = !!(d && d.tisse);
+    document.getElementById('tpNoue').checked = !!(d && d.noue);
+    document.getElementById('tpHandTuft').checked = !!(d && d.hand_tuft);
+    document.getElementById('tpStock').checked = !!(d && d.stock);
+}
+
 function currentClientType() {
     return document.getElementById('ctRevendeur').checked ? 'revendeur' : 'particulier';
 }
@@ -301,6 +317,7 @@ function collectData() {
         client_ice: document.getElementById('client_ice').value,
         client_adresse: document.getElementById('client_adresse').value,
         mode_paiement: currentModePaiement(),
+        ...collectTypeProduit(),
         etat: document.getElementById('etat').value,
         mention: document.getElementById('mention').value === '1',
         tva: norm(document.getElementById('tva').value),
@@ -353,6 +370,7 @@ function sauvegardeDraft() {
         client_ice: document.getElementById('client_ice').value,
         client_adresse: document.getElementById('client_adresse').value,
         mode_paiement: currentModePaiement(),
+        ...collectTypeProduit(),
         etat: document.getElementById('etat').value,
         mention: document.getElementById('mention').value,
         tva: document.getElementById('tva').value,
@@ -421,6 +439,7 @@ async function majNumeroAuto() {
         setClientType(doc.client_type || 'particulier');
         activeType = doc.client_type || 'particulier';
         setModePaiement(doc.mode_paiement || 'especes');
+        setTypeProduit(doc);
 
         if (brouillon) {
             restaurerDraft(brouillon);
@@ -454,6 +473,7 @@ function restaurerDraft(b) {
     setClientType(b.client_type || 'particulier');
     activeType = b.client_type || 'particulier';
     setModePaiement(b.mode_paiement || 'especes');
+    setTypeProduit(b);
     document.getElementById('numero').value = b.numero || '';
     if (b.date_doc) document.getElementById('date_doc').value = b.date_doc;
     document.getElementById('client_id').value = b.client_id || '';

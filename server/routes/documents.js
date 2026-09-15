@@ -196,7 +196,8 @@ router.get('/:id', async (req, res, next) => {
 router.post('/', async (req, res, next) => {
     try {
         const { type, numero, date_doc, client_type, client_nom, client_ice, client_adresse,
-                lignes, etat, mention, tva, qualite, remarque, montant_lettres, mode_paiement } = req.body;
+                lignes, etat, mention, tva, qualite, remarque, montant_lettres, mode_paiement,
+                tisse, noue, hand_tuft, stock } = req.body;
         if (!TYPES.includes(type)) return res.status(400).json({ error: 'Type de document invalide' });
         if (!date_doc) return res.status(400).json({ error: 'La date est requise' });
 
@@ -212,6 +213,7 @@ router.post('/', async (req, res, next) => {
         total = arrondi2(total);
         const mentionVal = mention !== undefined ? (mention ? 1 : 0) : 0;
         const tvaPct = norm(tva);
+        const cb = (v) => v ? 1 : 0;
         let totalTtc = appliquerTva(total, mentionVal, tvaPct);
 
         let result;
@@ -219,13 +221,15 @@ router.post('/', async (req, res, next) => {
             try {
                 result = await db.run(
                     `INSERT INTO document (type, numero, date_doc, client_type, client_nom, client_ice, client_adresse,
-                                           total_dhs, creator_id, mode_paiement, montant_lettres, etat, mention, tva, qualite, remarque)
-                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id`,
+                                           total_dhs, creator_id, mode_paiement, tisse, noue, hand_tuft, stock,
+                                           montant_lettres, etat, mention, tva, qualite, remarque)
+                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id`,
                     type, finalNumero, date_doc, ct,
                     client_nom || '', client_ice || '', client_adresse || '',
                     totalTtc,
                     req.user ? req.user.id : null,
                     mode_paiement || '',
+                    cb(tisse), cb(noue), cb(hand_tuft), cb(stock),
                     montant_lettres || '',
                     ETATS.includes(etat) ? etat : 'brouillon',
                     mentionVal, tvaPct,
@@ -286,7 +290,8 @@ router.put('/:id', requireAdmin, async (req, res, next) => {
         if (!doc) return res.status(404).json({ error: 'Document non trouvé' });
 
         const { numero, date_doc, client_type, client_nom, client_ice, client_adresse,
-                lignes, etat, mention, tva, qualite, remarque, montant_lettres, mode_paiement } = req.body;
+                lignes, etat, mention, tva, qualite, remarque, montant_lettres, mode_paiement,
+                tisse, noue, hand_tuft, stock } = req.body;
 
         let finalNumero = numero || doc.numero;
         if (finalNumero !== doc.numero) {
@@ -328,7 +333,8 @@ router.put('/:id', requireAdmin, async (req, res, next) => {
 
         await db.run(
             `UPDATE document SET numero = ?, date_doc = ?, client_type = ?, client_nom = ?, client_ice = ?,
-             client_adresse = ?, total_dhs = ?, mode_paiement = ?, montant_lettres = ?, etat = ?, mention = ?, tva = ?,
+             client_adresse = ?, total_dhs = ?, mode_paiement = ?, tisse = ?, noue = ?, hand_tuft = ?, stock = ?,
+             montant_lettres = ?, etat = ?, mention = ?, tva = ?,
              qualite = ?, remarque = ? WHERE id = ?`,
             finalNumero, date_doc || doc.date_doc, ct,
             client_nom !== undefined ? client_nom : doc.client_nom,
@@ -336,6 +342,10 @@ router.put('/:id', requireAdmin, async (req, res, next) => {
             client_adresse !== undefined ? client_adresse : doc.client_adresse,
             total,
             mode_paiement !== undefined ? mode_paiement : doc.mode_paiement || '',
+            tisse !== undefined ? (tisse ? 1 : 0) : doc.tisse,
+            noue !== undefined ? (noue ? 1 : 0) : doc.noue,
+            hand_tuft !== undefined ? (hand_tuft ? 1 : 0) : doc.hand_tuft,
+            stock !== undefined ? (stock ? 1 : 0) : doc.stock,
             montant_lettres !== undefined ? montant_lettres : doc.montant_lettres,
             ETATS.includes(etat) ? etat : doc.etat,
             mentionVal, tvaPct,

@@ -34,6 +34,10 @@ function ddl(kind) {
     total_dhs DOUBLE PRECISION NOT NULL DEFAULT 0,
     creator_id INTEGER DEFAULT NULL,
     mode_paiement TEXT DEFAULT '',
+    tisse INTEGER NOT NULL DEFAULT 0,
+    noue INTEGER NOT NULL DEFAULT 0,
+    hand_tuft INTEGER NOT NULL DEFAULT 0,
+    stock INTEGER NOT NULL DEFAULT 0,
     montant_lettres TEXT DEFAULT '',
     etat TEXT NOT NULL DEFAULT 'brouillon' CHECK(etat IN ('brouillon','emise','validee','annulee')),
     mention INTEGER NOT NULL DEFAULT 0,
@@ -92,6 +96,12 @@ async function init() {
         if (pgCols2.rows.length === 0) {
             await conn.query("ALTER TABLE document ADD COLUMN creator_id INTEGER");
         }
+        for (const col of ['tisse', 'noue', 'hand_tuft', 'stock']) {
+            const c = await conn.query("SELECT column_name FROM information_schema.columns WHERE table_name = 'document' AND column_name = $1", [col]);
+            if (c.rows.length === 0) {
+                await conn.query('ALTER TABLE document ADD COLUMN ' + col + ' INTEGER NOT NULL DEFAULT 0');
+            }
+        }
     } else {
         const { DatabaseSync } = require('node:sqlite');
         const dataDir = path.join(__dirname, '..', 'data');
@@ -108,6 +118,11 @@ async function init() {
         }
         if (!cols.some(c => c.name === 'creator_id')) {
             db.exec('ALTER TABLE document ADD COLUMN creator_id INTEGER');
+        }
+        for (const col of ['tisse', 'noue', 'hand_tuft', 'stock']) {
+            if (!cols.some(c => c.name === col)) {
+                db.exec('ALTER TABLE document ADD COLUMN ' + col + ' INTEGER NOT NULL DEFAULT 0');
+            }
         }
         conn = {
             all: (sql, ...p) => db.prepare(sql).all(...p),
