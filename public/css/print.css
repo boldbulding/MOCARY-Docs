@@ -33,11 +33,14 @@ body { font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', serif; bac
 .co-header { display: flex; gap: 0.8rem; align-items: center; }
 .logo { display: flex; align-items: center; gap: 0.6rem; }
 .logo-mark {
-    width: 46px; height: 46px; border: 2px solid #111; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'Cinzel', serif;
-    font-size: 1.6rem; font-weight: 700; color: #111;
-    object-fit: cover;
+    height: 46px; width: auto;
+    display: block;
+    object-fit: contain;
+    border-radius: 8px;
+    background: #fff;
+    padding: 3px 6px;
+    border: 1px solid rgba(0,0,0,.15);
+    box-shadow: 0 1px 4px rgba(0,0,0,.15);
 }
 .logo-text { display: flex; flex-direction: column; }
 .logo-name { font-family: 'Cinzel', serif; font-size: 1.4rem; font-weight: 700; letter-spacing: 2px; color: #111; }

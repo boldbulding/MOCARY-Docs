@@ -19,11 +19,15 @@ body { font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', serif; bac
 }
 .brand { display: flex; align-items: center; gap: 0.7rem; }
 .logo-mark {
-    width: 36px; height: 36px; border: 2px solid var(--text);
-    display: flex; align-items: center; justify-content: center;
-    font-family: var(--font-display); font-weight: 700; font-size: 1rem;
-    border-radius: 6px; flex-shrink: 0;
-    object-fit: cover;
+    height: 40px; width: auto;
+    display: block;
+    object-fit: contain;
+    border-radius: 8px;
+    background: #fff;
+    padding: 3px 6px;
+    border: 1px solid rgba(0,0,0,.12);
+    box-shadow: 0 2px 6px rgba(0,0,0,.12);
+    flex-shrink: 0;
 }
 .brand-name { font-family: 'Cinzel', serif; font-size: 1.25rem; font-weight: 700; letter-spacing: 2px; }
 .brand-sub { font-size: 0.72rem; opacity: 0.85; display: block; font-weight: 600; letter-spacing: 0.8px; }
@@ -103,7 +107,7 @@ tr:hover { background: #f9fafb; }
     background: var(--card); border-radius: 12px; box-shadow: 0 20px 50px rgba(0,0,0,0.35);
     padding: 2.2rem 2rem; text-align: center;
 }
-.login-logo .logo-mark { margin: 0 auto 0.6rem; width: 56px; height: 56px; border-color: var(--primary); color: var(--primary); font-size: 1.8rem; }
+.login-logo .logo-mark { margin: 0 auto 0.8rem; width: 230px; height: auto; border-radius: 12px; }
 .login-card h1 { font-family: 'Cinzel', serif; font-size: 1.5rem; letter-spacing: 2px; color: var(--primary); }
 .login-sub { font-size: 0.72rem; color: var(--muted); letter-spacing: 1.5px; margin-bottom: 1.6rem; }
 .login-field { text-align: left; margin-bottom: 1rem; }
