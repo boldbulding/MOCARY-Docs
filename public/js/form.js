@@ -352,9 +352,12 @@ async function save() {
     try {
         if (editId) {
             await apiCall('/documents/' + editId, { method: 'PUT', body: JSON.stringify(data) });
+            viderDraft();
             return { id: editId };
         }
-        return await apiCall('/documents', { method: 'POST', body: JSON.stringify(data) });
+        const cree = await apiCall('/documents', { method: 'POST', body: JSON.stringify(data) });
+        viderDraft();
+        return cree;
     } catch (err) {
         showNotification(err.message, 'error');
         return null;
@@ -423,9 +426,10 @@ async function majNumeroAuto() {
     document.getElementById('montant_lettres').addEventListener('input', (e) => { e.target.dataset.manual = '1'; });
 
     let brouillon = lireDraft();
-    if (brouillon && editId && !confirm('Un brouillon non enregistré existe pour ce document. Le restaurer ?')) {
+    if (editId && brouillon && !confirm('Un brouillon non enregistré existe pour ce document. Le restaurer ?')) {
         viderDraft(); brouillon = null;
     }
+    if (!editId) { viderDraft(); brouillon = null; }
 
     if (editId) {
         let doc;
