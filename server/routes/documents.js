@@ -205,7 +205,7 @@ router.get('/:id', async (req, res, next) => {
 
 router.post('/', async (req, res, next) => {
     try {
-        const { type, numero, date_doc, client_type, client_nom, client_ice, client_adresse,
+        const { type, numero, date_doc, client_type, client_nom, nom_client, client_ice, client_adresse,
                 lignes, etat, mention, tva, qualite, remarque, montant_lettres, mode_paiement,
                 tisse, noue, hand_tuft, stock } = req.body;
         if (!TYPES.includes(type)) return res.status(400).json({ error: 'Type de document invalide' });
@@ -230,12 +230,12 @@ router.post('/', async (req, res, next) => {
         for (let tentative = 0; ; tentative++) {
             try {
                 result = await db.run(
-                    `INSERT INTO document (type, numero, date_doc, client_type, client_nom, client_ice, client_adresse,
+                    `INSERT INTO document (type, numero, date_doc, client_type, client_nom, nom_client, client_ice, client_adresse,
                                            total_dhs, creator_id, mode_paiement, tisse, noue, hand_tuft, stock,
                                            montant_lettres, etat, mention, tva, qualite, remarque)
-                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id`,
+                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id`,
                     type, finalNumero, date_doc, ct,
-                    client_nom || '', client_ice || '', client_adresse || '',
+                    client_nom || '', nom_client || '', client_ice || '', client_adresse || '',
                     totalTtc,
                     req.user ? req.user.id : null,
                     mode_paiement || '',
@@ -299,7 +299,7 @@ router.put('/:id', requireAdmin, async (req, res, next) => {
         const doc = await db.get('SELECT * FROM document WHERE id = ?', id);
         if (!doc) return res.status(404).json({ error: 'Document non trouvé' });
 
-        const { numero, date_doc, client_type, client_nom, client_ice, client_adresse,
+        const { numero, date_doc, client_type, client_nom, nom_client, client_ice, client_adresse,
                 lignes, etat, mention, tva, qualite, remarque, montant_lettres, mode_paiement,
                 tisse, noue, hand_tuft, stock } = req.body;
 
@@ -342,12 +342,13 @@ router.put('/:id', requireAdmin, async (req, res, next) => {
         }
 
         await db.run(
-            `UPDATE document SET numero = ?, date_doc = ?, client_type = ?, client_nom = ?, client_ice = ?,
+            `UPDATE document SET numero = ?, date_doc = ?, client_type = ?, client_nom = ?, nom_client = ?, client_ice = ?,
              client_adresse = ?, total_dhs = ?, mode_paiement = ?, tisse = ?, noue = ?, hand_tuft = ?, stock = ?,
              montant_lettres = ?, etat = ?, mention = ?, tva = ?,
              qualite = ?, remarque = ? WHERE id = ?`,
             finalNumero, date_doc || doc.date_doc, ct,
             client_nom !== undefined ? client_nom : doc.client_nom,
+            nom_client !== undefined ? nom_client : doc.nom_client || '',
             client_ice !== undefined ? client_ice : doc.client_ice,
             client_adresse !== undefined ? client_adresse : doc.client_adresse,
             total,

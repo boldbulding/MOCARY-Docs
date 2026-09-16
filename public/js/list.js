@@ -56,7 +56,7 @@ async function loadDocs() {
             <td><span class="badge ${d.type === 'devis' ? 'badge-devis' : 'badge-facture'}">${escapeHtml((d.type || '').toUpperCase())}</span></td>
             <td><strong>${escapeHtml(d.numero)}</strong></td>
             <td>${formatDate(d.date_doc)}</td>
-            <td>${escapeHtml(d.client_nom || '-')}</td>
+            <td>${escapeHtml(d.nom_client || d.client_nom || '-')}</td>
             <td>${escapeHtml(d.client_ice || '-')}</td>
             <td><span class="badge ${d.client_type === 'revendeur' ? 'badge-rev' : 'badge-part'}">${escapeHtml(clientTypeLabels[d.client_type] || d.client_type || '-')}</span></td>
             <td class="text-right">${formatMontant(d.total_dhs, '')}</td>

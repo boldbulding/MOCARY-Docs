@@ -260,7 +260,7 @@ document.getElementById('client_id').addEventListener('change', () => {
     const sel = document.getElementById('client_id');
     const c = clientsListe.find(x => String(x.id) === String(sel.value));
     if (c) {
-        document.getElementById('client_nom').value = c.nom || '';
+        document.getElementById('nom_client').value = c.nom || '';
         document.getElementById('client_ice').value = c.ice || '';
         document.getElementById('client_adresse').value = c.adresse || '';
         setClientType(c.type_client || 'particulier');
@@ -269,7 +269,7 @@ document.getElementById('client_id').addEventListener('change', () => {
 });
 
 async function saveClientCourant() {
-    const nom = document.getElementById('client_nom').value.trim();
+    const nom = document.getElementById('nom_client').value.trim();
     if (!nom) { showNotification('Saisissez un nom de client d\'abord', 'error'); return; }
     try {
         await apiCall('/clients', {
@@ -314,6 +314,7 @@ function collectData() {
         client_type: activeType,
         client_id: document.getElementById('client_id').value || null,
         client_nom: document.getElementById('client_nom').value,
+        nom_client: document.getElementById('nom_client').value,
         client_ice: document.getElementById('client_ice').value,
         client_adresse: document.getElementById('client_adresse').value,
         mode_paiement: currentModePaiement(),
@@ -335,7 +336,7 @@ async function save() {
     const data = collectData();
     if (!data.date_doc) { showNotification('La date est requise', 'error'); return null; }
     if (data.lignes.length === 0) { showNotification('Ajoutez au moins une ligne', 'error'); return null; }
-    if (!data.client_nom) { showNotification('Indiquez le nom du client', 'error'); return null; }
+    if (!data.nom_client) { showNotification('Indiquez le nom du client', 'error'); return null; }
     saveEnCours = true;
     document.getElementById('saveBtn').disabled = true;
     document.getElementById('printBtn').disabled = true;
@@ -367,6 +368,7 @@ function sauvegardeDraft() {
         date_doc: document.getElementById('date_doc').value,
         client_id: document.getElementById('client_id').value,
         client_nom: document.getElementById('client_nom').value,
+        nom_client: document.getElementById('nom_client').value,
         client_ice: document.getElementById('client_ice').value,
         client_adresse: document.getElementById('client_adresse').value,
         mode_paiement: currentModePaiement(),
@@ -430,6 +432,7 @@ async function majNumeroAuto() {
         document.getElementById('etat').value = doc.etat;
         document.getElementById('client_id').value = doc.client_id || '';
         document.getElementById('client_nom').value = doc.client_nom || '';
+        document.getElementById('nom_client').value = doc.nom_client || '';
         document.getElementById('client_ice').value = doc.client_ice || '';
         document.getElementById('client_adresse').value = doc.client_adresse || '';
         document.getElementById('mention').value = doc.mention ? '1' : '0';
@@ -478,6 +481,7 @@ function restaurerDraft(b) {
     if (b.date_doc) document.getElementById('date_doc').value = b.date_doc;
     document.getElementById('client_id').value = b.client_id || '';
     document.getElementById('client_nom').value = b.client_nom || '';
+    document.getElementById('nom_client').value = b.nom_client || '';
     document.getElementById('client_ice').value = b.client_ice || '';
     document.getElementById('client_adresse').value = b.client_adresse || '';
     document.getElementById('etat').value = b.etat || 'brouillon';

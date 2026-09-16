@@ -29,6 +29,7 @@ function ddl(kind) {
     date_doc TEXT NOT NULL,
     client_type TEXT NOT NULL DEFAULT 'particulier' CHECK(client_type IN ('particulier','revendeur')),
     client_nom TEXT DEFAULT '',
+    nom_client TEXT DEFAULT '',
     client_ice TEXT DEFAULT '',
     client_adresse TEXT DEFAULT '',
     total_dhs DOUBLE PRECISION NOT NULL DEFAULT 0,
@@ -92,6 +93,10 @@ async function init() {
         if (pgCols.rows.length === 0) {
             await conn.query("ALTER TABLE document ADD COLUMN mode_paiement TEXT DEFAULT ''");
         }
+        const pgColsNom = await conn.query("SELECT column_name FROM information_schema.columns WHERE table_name = 'document' AND column_name = 'nom_client'");
+        if (pgColsNom.rows.length === 0) {
+            await conn.query("ALTER TABLE document ADD COLUMN nom_client TEXT DEFAULT ''");
+        }
         const pgCols2 = await conn.query("SELECT column_name FROM information_schema.columns WHERE table_name = 'document' AND column_name = 'creator_id'");
         if (pgCols2.rows.length === 0) {
             await conn.query("ALTER TABLE document ADD COLUMN creator_id INTEGER");
@@ -115,6 +120,9 @@ async function init() {
         const cols = db.prepare('PRAGMA table_info(document)').all();
         if (!cols.some(c => c.name === 'mode_paiement')) {
             db.exec("ALTER TABLE document ADD COLUMN mode_paiement TEXT DEFAULT ''");
+        }
+        if (!cols.some(c => c.name === 'nom_client')) {
+            db.exec("ALTER TABLE document ADD COLUMN nom_client TEXT DEFAULT ''");
         }
         if (!cols.some(c => c.name === 'creator_id')) {
             db.exec('ALTER TABLE document ADD COLUMN creator_id INTEGER');

@@ -14,7 +14,7 @@ document.getElementById('editLink').href = 'form.html?id=' + Number(id);
 async function charger() {
     const doc = await apiCall('/documents/' + id);
     document.getElementById('titre').textContent = doc.type === 'devis' ? 'DEVIS' : 'FACTURE';
-    document.getElementById('clientNom').textContent = doc.client_nom || '-';
+    document.getElementById('clientNom').textContent = doc.nom_client || doc.client_nom || '-';
     document.getElementById('clientIce').textContent = doc.client_ice || '-';
     if (!doc.client_ice) document.getElementById('clientIceRow').style.display = 'none';
     if (doc.client_adresse) {
