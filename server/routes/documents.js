@@ -207,7 +207,7 @@ router.post('/', async (req, res, next) => {
     try {
         const { type, numero, date_doc, client_type, client_nom, nom_client, client_ice, client_adresse,
                 lignes, etat, mention, tva, qualite, remarque, montant_lettres, mode_paiement,
-                tisse, noue, hand_tuft, stock } = req.body;
+                tisse, noue, hand_tuft, stock, remise } = req.body;
         if (!TYPES.includes(type)) return res.status(400).json({ error: 'Type de document invalide' });
         if (!date_doc) return res.status(400).json({ error: 'La date est requise' });
 
@@ -231,15 +231,15 @@ router.post('/', async (req, res, next) => {
             try {
                 result = await db.run(
                     `INSERT INTO document (type, numero, date_doc, client_type, client_nom, nom_client, client_ice, client_adresse,
-                                           total_dhs, creator_id, mode_paiement, tisse, noue, hand_tuft, stock,
+                                           total_dhs, creator_id, mode_paiement, tisse, noue, hand_tuft, stock, remise,
                                            montant_lettres, etat, mention, tva, qualite, remarque)
-                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id`,
+                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id`,
                     type, finalNumero, date_doc, ct,
                     client_nom || '', nom_client || '', client_ice || '', client_adresse || '',
                     totalTtc,
                     req.user ? req.user.id : null,
                     mode_paiement || '',
-                    cb(tisse), cb(noue), cb(hand_tuft), cb(stock),
+                    cb(tisse), cb(noue), cb(hand_tuft), cb(stock), cb(remise),
                     montant_lettres || '',
                     ETATS.includes(etat) ? etat : 'brouillon',
                     mentionVal, tvaPct,
@@ -301,7 +301,7 @@ router.put('/:id', requireAdmin, async (req, res, next) => {
 
         const { numero, date_doc, client_type, client_nom, nom_client, client_ice, client_adresse,
                 lignes, etat, mention, tva, qualite, remarque, montant_lettres, mode_paiement,
-                tisse, noue, hand_tuft, stock } = req.body;
+                tisse, noue, hand_tuft, stock, remise } = req.body;
 
         let finalNumero = numero || doc.numero;
         if (finalNumero !== doc.numero) {
@@ -343,7 +343,7 @@ router.put('/:id', requireAdmin, async (req, res, next) => {
 
         await db.run(
             `UPDATE document SET numero = ?, date_doc = ?, client_type = ?, client_nom = ?, nom_client = ?, client_ice = ?,
-             client_adresse = ?, total_dhs = ?, mode_paiement = ?, tisse = ?, noue = ?, hand_tuft = ?, stock = ?,
+             client_adresse = ?, total_dhs = ?, mode_paiement = ?, tisse = ?, noue = ?, hand_tuft = ?, stock = ?, remise = ?,
              montant_lettres = ?, etat = ?, mention = ?, tva = ?,
              qualite = ?, remarque = ? WHERE id = ?`,
             finalNumero, date_doc || doc.date_doc, ct,
@@ -357,6 +357,7 @@ router.put('/:id', requireAdmin, async (req, res, next) => {
             noue !== undefined ? (noue ? 1 : 0) : doc.noue,
             hand_tuft !== undefined ? (hand_tuft ? 1 : 0) : doc.hand_tuft,
             stock !== undefined ? (stock ? 1 : 0) : doc.stock,
+            remise !== undefined ? (remise ? 1 : 0) : doc.remise,
             montant_lettres !== undefined ? montant_lettres : doc.montant_lettres,
             ETATS.includes(etat) ? etat : doc.etat,
             mentionVal, tvaPct,

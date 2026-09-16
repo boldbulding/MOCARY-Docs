@@ -72,6 +72,12 @@ async function charger() {
     const lettres = (doc.montant_lettres || nombreMots(Math.round(ttc)) + ' DIRHAMS').toUpperCase();
     mt.textContent = 'Arrêtée ' + typeMot + ' à la somme de : ' + lettres;
 
+    const remLine = document.getElementById('mentionRemise');
+    if (remLine) {
+        remLine.textContent = doc.remise ? 'REMISE' : '';
+        remLine.style.display = doc.remise ? 'block' : 'none';
+    }
+
     if (doc.type === 'facture') {
         document.getElementById('mentionTva').textContent = tvaAppliquee
             ? 'TVA ' + tvaVal + ' % incluse dans le total'

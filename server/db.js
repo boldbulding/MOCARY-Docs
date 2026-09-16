@@ -39,6 +39,7 @@ function ddl(kind) {
     noue INTEGER NOT NULL DEFAULT 0,
     hand_tuft INTEGER NOT NULL DEFAULT 0,
     stock INTEGER NOT NULL DEFAULT 0,
+    remise INTEGER NOT NULL DEFAULT 0,
     montant_lettres TEXT DEFAULT '',
     etat TEXT NOT NULL DEFAULT 'brouillon' CHECK(etat IN ('brouillon','emise','validee','annulee')),
     mention INTEGER NOT NULL DEFAULT 0,
@@ -107,6 +108,10 @@ async function init() {
                 await conn.query('ALTER TABLE document ADD COLUMN ' + col + ' INTEGER NOT NULL DEFAULT 0');
             }
         }
+        const pgRemise = await conn.query("SELECT column_name FROM information_schema.columns WHERE table_name = 'document' AND column_name = 'remise'");
+        if (pgRemise.rows.length === 0) {
+            await conn.query('ALTER TABLE document ADD COLUMN remise INTEGER NOT NULL DEFAULT 0');
+        }
     } else {
         const { DatabaseSync } = require('node:sqlite');
         const dataDir = path.join(__dirname, '..', 'data');
@@ -131,6 +136,9 @@ async function init() {
             if (!cols.some(c => c.name === col)) {
                 db.exec('ALTER TABLE document ADD COLUMN ' + col + ' INTEGER NOT NULL DEFAULT 0');
             }
+        }
+        if (!cols.some(c => c.name === 'remise')) {
+            db.exec('ALTER TABLE document ADD COLUMN remise INTEGER NOT NULL DEFAULT 0');
         }
         conn = {
             all: (sql, ...p) => db.prepare(sql).all(...p),
