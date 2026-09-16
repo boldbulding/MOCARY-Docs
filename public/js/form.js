@@ -55,11 +55,12 @@ function setTypeProduit(d) {
 }
 
 function collectRemise() {
-    return document.getElementById('remise').checked;
+    return norm(document.getElementById('remise').value);
 }
 
 function setRemise(d) {
-    document.getElementById('remise').checked = !!(d && d.remise);
+    const v = d && d.remise ? d.remise : 0;
+    document.getElementById('remise').value = v || '';
 }
 
 function currentClientType() {
@@ -225,17 +226,22 @@ function recalc(tr) {
 }
 
 function recalcAll() {
-    let total = 0;
+    let brut = 0;
     document.querySelectorAll('#linesBody tr').forEach(tr => {
         const mInp = getInputs(tr).montant;
-        total += norm(mInp.value);
+        brut += norm(mInp.value);
     });
-    total = Math.round(total * 100) / 100;
+    brut = Math.round(brut * 100) / 100;
+    const remisePct = norm(document.getElementById('remise').value);
+    const remiseMontant = Math.round(brut * remisePct) / 100;
+    const total = Math.round((brut - remiseMontant) * 100) / 100;
     const tvaPct = norm(document.getElementById('tva').value);
     const mentionOn = document.getElementById('mention').value === '1';
     const tvaAppliquee = mentionOn && tvaPct > 0;
     const tvaMontant = tvaAppliquee ? Math.round(total * tvaPct) / 100 : 0;
-    const aff = total + tvaMontant;
+    const aff = Math.round((total + tvaMontant) * 100) / 100;
+    document.getElementById('totalRemiseRow').style.display = remiseMontant > 0 ? '' : 'none';
+    document.getElementById('totalRemiseDisplay').textContent = formatMontant(remiseMontant) + ' (' + remisePct + ' %)';
     document.getElementById('totalHtRow').style.display = tvaAppliquee ? '' : 'none';
     document.getElementById('totalTvaRow').style.display = tvaAppliquee ? '' : 'none';
     document.getElementById('totalHtDisplay').textContent = formatMontant(total);
@@ -484,6 +490,7 @@ async function majNumeroAuto() {
     document.getElementById('docForm').addEventListener('change', planifierDraft);
     document.getElementById('tva').addEventListener('input', recalcAll);
     document.getElementById('mention').addEventListener('change', recalcAll);
+    document.getElementById('remise').addEventListener('input', recalcAll);
 })().catch(e => showNotification('Erreur d\'initialisation : ' + e.message, 'error'));
 
 function restaurerDraft(b) {

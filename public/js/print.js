@@ -54,16 +54,26 @@ async function charger() {
     const ttc = Number(doc.total_dhs) || 0;
     const tvaVal = Number(doc.tva) || 0;
     const tvaAppliquee = Number(doc.mention) === 1 && tvaVal > 0;
-    const tvaMontant = tvaAppliquee ? ttc - ttc / (1 + tvaVal / 100) : 0;
-    const ht = ttc - tvaMontant;
-    document.getElementById('totalDhs').textContent = fmt(ht) + ' DHS';
+    const tvaMontant = tvaAppliquee ? Math.round((ttc - ttc / (1 + tvaVal / 100)) * 100) / 100 : 0;
+    const net = Math.round((ttc - tvaMontant) * 100) / 100;
+    const remisePct = Number(doc.remise) || 0;
+    const remiseMontant = remisePct > 0 ? Math.round((net * remisePct / (100 - remisePct)) * 100) / 100 : 0;
+    const brut = Math.round((net + remiseMontant) * 100) / 100;
+    document.getElementById('totalDhs').textContent = fmt(brut) + ' DHS';
+    if (remiseMontant > 0) {
+        document.getElementById('remiseRow').style.display = '';
+        document.getElementById('remiseLabel').textContent = 'REMISE (' + remisePct + ' %)';
+        document.getElementById('remiseDhs').textContent = '- ' + fmt(remiseMontant) + ' DHS';
+    } else {
+        document.getElementById('remiseRow').style.display = 'none';
+    }
     if (tvaAppliquee) {
         document.getElementById('totalGeneral').textContent = fmt(ttc) + ' DHS';
         document.getElementById('tvaRow').style.display = '';
         document.getElementById('tvaLabel').textContent = 'TVA (' + tvaVal + ' %)';
         document.getElementById('tvaDhs').textContent = fmt(tvaMontant) + ' DHS';
     } else {
-        document.getElementById('totalGeneral').textContent = fmt(ht) + ' DHS';
+        document.getElementById('totalGeneral').textContent = fmt(net) + ' DHS';
         document.getElementById('tvaRow').style.display = 'none';
     }
 
@@ -71,12 +81,6 @@ async function charger() {
     const typeMot = doc.type === 'devis' ? 'présent devis' : 'présente facture';
     const lettres = (doc.montant_lettres || nombreMots(Math.round(ttc)) + ' DIRHAMS').toUpperCase();
     mt.textContent = 'Arrêtée ' + typeMot + ' à la somme de : ' + lettres;
-
-    const remLine = document.getElementById('mentionRemise');
-    if (remLine) {
-        remLine.textContent = doc.remise ? 'REMISE' : '';
-        remLine.style.display = doc.remise ? 'block' : 'none';
-    }
 
     if (doc.type === 'facture') {
         document.getElementById('mentionTva').textContent = tvaAppliquee

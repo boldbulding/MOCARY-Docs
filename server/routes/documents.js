@@ -44,6 +44,11 @@ function appliquerTva(base, mention, tvaPct) {
     return (mention === 1 && tvaPct > 0) ? arrondi2(base * (1 + tvaPct / 100)) : base;
 }
 
+function appliquerRemiseTva(base, remisePct, mention, tvaPct) {
+    if (remisePct > 0) base = arrondi2(base * (1 - remisePct / 100));
+    return appliquerTva(base, mention, tvaPct);
+}
+
 const TYPES = ['devis', 'facture'];
 const ETATS = ['brouillon', 'emise', 'validee', 'annulee'];
 
@@ -224,7 +229,8 @@ router.post('/', async (req, res, next) => {
         const mentionVal = mention !== undefined ? (mention ? 1 : 0) : 0;
         const tvaPct = norm(tva);
         const cb = (v) => v ? 1 : 0;
-        let totalTtc = appliquerTva(total, mentionVal, tvaPct);
+        const remisePct = norm(remise);
+        let totalTtc = appliquerRemiseTva(total, remisePct, mentionVal, tvaPct);
 
         let result;
         for (let tentative = 0; ; tentative++) {
@@ -239,7 +245,7 @@ router.post('/', async (req, res, next) => {
                     totalTtc,
                     req.user ? req.user.id : null,
                     mode_paiement || '',
-                    cb(tisse), cb(noue), cb(hand_tuft), cb(stock), cb(remise),
+                    cb(tisse), cb(noue), cb(hand_tuft), cb(stock), norm(remise),
                     montant_lettres || '',
                     ETATS.includes(etat) ? etat : 'brouillon',
                     mentionVal, tvaPct,
@@ -312,6 +318,7 @@ router.put('/:id', requireAdmin, async (req, res, next) => {
         const ct = client_type === 'revendeur' ? 'revendeur' : 'particulier';
         const mentionVal = mention !== undefined ? (mention ? 1 : 0) : doc.mention;
         const tvaPct = tva !== undefined ? norm(tva) : norm(doc.tva);
+        const remiseVal = remise !== undefined ? norm(remise) : norm(doc.remise);
 
         let total;
         if (lignes !== undefined && Array.isArray(lignes)) {
@@ -335,10 +342,13 @@ router.put('/:id', requireAdmin, async (req, res, next) => {
                     puP, puR, montant
                 );
             }
-            total = appliquerTva(arrondi2(base), mentionVal, tvaPct);
+            total = appliquerRemiseTva(arrondi2(base), remiseVal, mentionVal, tvaPct);
         } else {
-            const base = (doc.mention === 1 && norm(doc.tva) > 0) ? arrondi2(doc.total_dhs / (1 + norm(doc.tva) / 100)) : doc.total_dhs;
-            total = appliquerTva(base, mentionVal, tvaPct);
+            let net = doc.total_dhs;
+            if (doc.mention === 1 && norm(doc.tva) > 0) net = arrondi2(net / (1 + norm(doc.tva) / 100));
+            const oldRemise = norm(doc.remise);
+            const brut = oldRemise > 0 ? arrondi2(net / (1 - oldRemise / 100)) : net;
+            total = appliquerRemiseTva(brut, remiseVal, mentionVal, tvaPct);
         }
 
         await db.run(
@@ -357,7 +367,7 @@ router.put('/:id', requireAdmin, async (req, res, next) => {
             noue !== undefined ? (noue ? 1 : 0) : doc.noue,
             hand_tuft !== undefined ? (hand_tuft ? 1 : 0) : doc.hand_tuft,
             stock !== undefined ? (stock ? 1 : 0) : doc.stock,
-            remise !== undefined ? (remise ? 1 : 0) : doc.remise,
+            remise !== undefined ? norm(remise) : norm(doc.remise),
             montant_lettres !== undefined ? montant_lettres : doc.montant_lettres,
             ETATS.includes(etat) ? etat : doc.etat,
             mentionVal, tvaPct,

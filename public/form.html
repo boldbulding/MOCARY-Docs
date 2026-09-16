@@ -109,8 +109,8 @@
                 </div>
 
                 <div class="client-type" id="remiseBox" style="margin-top:0.6rem;">
-                    <span class="ct-label">Remise :</span>
-                    <label class="case"><input type="checkbox" id="remise"> REMISE</label>
+                    <span class="ct-label">Remise (%) :</span>
+                    <input type="number" step="0.01" min="0" id="remise" placeholder="0" value="0" style="width:90px;padding:0.25rem 0.5rem;border:1px solid var(--border);border-radius:4px;">
                 </div>
 
                 <div class="grid">
@@ -183,6 +183,7 @@
                 <button type="button" class="btn" style="margin-top:0.6rem;" onclick="addLine()">+ Ajouter une ligne</button>
 
                 <div class="totals">
+                    <div class="row" id="totalRemiseRow" style="display:none">Remise : <b id="totalRemiseDisplay">0,00</b></div>
                     <div class="row" id="totalHtRow" style="display:none">Total HT : <b id="totalHtDisplay">0,00</b></div>
                     <div class="row" id="totalTvaRow" style="display:none">TVA : <b id="totalTvaDisplay">0,00</b></div>
                     <div class="row">TOTAL GÉNÉRAL : <b id="totalDisplay">0,00</b></div>
@@ -224,7 +225,7 @@
         </div>
     </main>
 
-    <script src="js/api.js?v=16"></script>
-    <script src="js/form.js?v=16"></script>
+    <script src="js/api.js?v=17"></script>
+    <script src="js/form.js?v=17"></script>
 </body>
 </html>
