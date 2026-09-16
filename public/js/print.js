@@ -23,7 +23,7 @@ async function charger() {
     }
     document.getElementById('numero').textContent = doc.numero;
     document.getElementById('dateDoc').textContent = formatDate(doc.date_doc);
-    document.title = (doc.type === 'devis' ? 'Devis' : 'Facture') + ' ' + doc.numero + ' - MOCARY SA';
+    document.title = (doc.type === 'devis' ? 'Devis' : 'Facture') + ' ' + doc.numero + ' - MOCARY DOCS';
 
     const body = document.getElementById('lignesBody');
     body.innerHTML = '';
