@@ -32,9 +32,13 @@
         </div>
     </div>
 
-    <script src="js/api.js?v=8"></script>
+    <script src="js/api.js?v=15"></script>
     <script>
-        if (isLoggedIn()) window.location.href = 'documents.html';
+        const pageAccueil = () => {
+            const u = getUser();
+            return u && u.role === 'production' ? 'production.html' : 'documents.html';
+        };
+        if (isLoggedIn()) window.location.href = pageAccueil();
 
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -52,7 +56,7 @@
                 });
                 setToken(data.token);
                 setUser(data.user);
-                window.location.href = 'documents.html';
+                window.location.href = pageAccueil();
             } catch (err) {
                 errEl.textContent = err.message;
                 errEl.style.display = 'block';

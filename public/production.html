@@ -3,11 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Factures & Devis - MOCARY DOCS</title>
+    <title>Production Tapis - MOCARY DOCS</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css?v=7">
+    <link rel="stylesheet" href="css/style.css?v=8">
+    <style>
+        .workflow {
+            border: 1px solid var(--border); border-left: 4px solid var(--accent);
+            background: #f0f6ff; border-radius: 8px; padding: 0.9rem 1.1rem; margin-bottom: 1.2rem; font-size: 0.9rem; line-height: 1.65;
+        }
+        .workflow b { color: var(--primary); }
+        .workflow .arrow { position: absolute; }
+        .tapis-sel {
+            padding: 0.3rem 0.5rem; border: 1px solid #d1d5db; border-radius: 6px;
+            font-weight: 700; font-size: 0.8rem; cursor: pointer; background: #fff;
+        }
+        .muted { color: var(--muted); font-size: 0.85rem; }
+        .val-info { font-size: 0.8rem; color: #065f46; font-weight: 600; }
+    </style>
 </head>
 <body>
     <header class="header">
@@ -15,26 +29,26 @@
             <img src="logo.jpg" alt="MOCARY DOCS" class="logo-mark">
             <div>
                 <span class="brand-name">MOCARY DOCS</span>
-                <span class="brand-sub">TAPIS NOUÉS MAIN-ARTISANAT — GESTION FACTURES & DEVIS</span>
+                <span class="brand-sub">TAPIS NOUÉS MAIN-ARTISANAT — SERVICE PRODUCTION</span>
             </div>
         </div>
         <div class="header-actions">
-            <a href="form.html?type=devis" class="btn btn-dark">+ Nouveau devis</a>
-            <a href="form.html?type=facture" class="btn btn-primary" style="border-color:var(--accent)">+ Nouvelle facture</a>
             <button class="btn btn-sm" onclick="logout()">Déconnexion</button>
         </div>
     </header>
 
     <main>
+        <div class="workflow">
+            <b>Workflow du Service Production Tapis :</b><br>
+            Commande reçue → Tapis en attente → <b>Tapis prêt : OUI</b> → Valider → Commande <b>VALIDÉE</b> chez l'Administrateur.
+            Une fois validée, la date, l'heure et l'utilisateur sont enregistrés automatiquement.
+        </div>
         <div class="card">
             <div class="tabs">
-                <button class="tab active" data-t="" onclick="charge('')">Tout</button>
-                <button class="tab" data-t="devis" onclick="charge('devis')">Devis</button>
-                <button class="tab" data-t="facture" onclick="charge('facture')">Factures</button>
+                <h3 style="font-family:'Cinzel',serif; letter-spacing:1px; margin:0;">Commandes à produire</h3>
             </div>
             <div class="filters">
-                <input type="text" id="filterCommercial" placeholder="Filtrer par nom du commercial...">
-                <input type="text" id="search" placeholder="Rechercher (n°, client, ICE)...">
+                <input type="text" id="search" placeholder="Rechercher (n°, client)...">
                 <select id="filterEtat">
                     <option value="">Tous les états</option>
                     <option value="brouillon">Brouillon</option>
@@ -42,8 +56,12 @@
                     <option value="validee">Validée</option>
                     <option value="annulee">Annulée</option>
                 </select>
+                <select id="filterTapis">
+                    <option value="">Tapis : tous</option>
+                    <option value="0">Tapis : NON (en attente)</option>
+                    <option value="1">Tapis : OUI</option>
+                </select>
                 <button class="btn btn-sm" onclick="loadDocs()">Filtrer</button>
-                <button class="btn btn-sm btn-primary" id="excelBtn" onclick="exportExcel()">📥 Excel</button>
             </div>
             <div class="table-container">
                 <table>
@@ -54,12 +72,11 @@
                             <th>Date</th>
                             <th>Client</th>
                             <th>ICE</th>
-                            <th>Type client</th>
                             <th>Total (DHS)</th>
                             <th>État</th>
                             <th>Tapis prêt</th>
                             <th>Validation</th>
-                            <th>Actions</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody id="docsTable"></tbody>
@@ -69,6 +86,6 @@
     </main>
 
     <script src="js/api.js?v=15"></script>
-    <script src="js/list.js?v=15"></script>
+    <script src="js/production.js?v=15"></script>
 </body>
 </html>

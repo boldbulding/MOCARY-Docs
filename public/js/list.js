@@ -9,6 +9,16 @@ const estAdmin = !!(userCourant && userCourant.role === 'admin');
 const etatLabels = { brouillon: 'Brouillon', emise: 'Émise', validee: 'Validée', annulee: 'Annulée' };
 const clientTypeLabels = { particulier: 'Particulier', revendeur: 'Revendeur' };
 
+function badgeTapis(v) {
+    return v ? '<span class="badge badge-validee">OUI</span>' : '<span class="badge badge-brouillon">NON</span>';
+}
+
+function heureValidee(le) {
+    if (!le) return '';
+    const m = /^(\d{4}-\d{2}-\d{2})[ T](\d{2}:\d{2})/.exec(String(le));
+    return m ? m[2] : '';
+}
+
 function charge(type) {
     currentType = type;
     document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.t === type));
@@ -35,19 +45,19 @@ function buildQuery() {
 async function loadDocs() {
     const mySeq = ++reqSeq;
     const tbody = document.getElementById('docsTable');
-    tbody.innerHTML = '<tr><td colspan="9" class="empty-row"><span class="spinner"></span> Chargement…</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="11" class="empty-row"><span class="spinner"></span> Chargement…</td></tr>';
     let docs;
     try {
         docs = await apiCall('/documents?' + buildQuery());
     } catch (e) {
         if (mySeq !== reqSeq) return;
-        tbody.innerHTML = `<tr><td colspan="9" class="empty-row" style="color:var(--danger)">${escapeHtml(e.message)}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="11" class="empty-row" style="color:var(--danger)">${escapeHtml(e.message)}</td></tr>`;
         return;
     }
     if (mySeq !== reqSeq) return;
     tbody.innerHTML = '';
     if (!docs || docs.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="9" class="empty-row">Aucun document. Cliquez sur « Nouveau devis » ou « Nouvelle facture ».</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="11" class="empty-row">Aucun document. Cliquez sur « Nouveau devis » ou « Nouvelle facture ».</td></tr>';
         return;
     }
     docs.forEach(d => {
@@ -61,6 +71,8 @@ async function loadDocs() {
             <td><span class="badge ${d.client_type === 'revendeur' ? 'badge-rev' : 'badge-part'}">${escapeHtml(clientTypeLabels[d.client_type] || d.client_type || '-')}</span></td>
             <td class="text-right">${formatMontant(d.total_dhs, '')}</td>
             <td>${badge(d.etat)}</td>
+            <td>${badgeTapis(d.tapis_pret)}</td>
+            <td>${d.valide_le ? 'le ' + formatDate(d.valide_le) + ' à ' + heureValidee(d.valide_le) + (d.valide_par ? ' par ' + escapeHtml(d.valide_par) : '') : '-'}</td>
             <td class="actions">
                 <a class="btn btn-sm btn-primary" href="print.html?id=${Number(d.id)}" title="Imprimer">🖨 Imprimer</a>
                 ${estAdmin ? `<a class="btn btn-sm" href="form.html?id=${Number(d.id)}" title="Modifier">✏️ Modifier</a>` : ''}

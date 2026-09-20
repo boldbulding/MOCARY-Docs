@@ -52,13 +52,25 @@ function appliquerRemiseTva(base, remisePct, mention, tvaPct) {
 const TYPES = ['devis', 'facture'];
 const ETATS = ['brouillon', 'emise', 'validee', 'annulee'];
 
-// Applique la visibilité : l'admin voit tout, les autres voient uniquement leurs documents
+// Applique la visibilité : admin et service production voient tout, les autres voient uniquement leurs documents
 function filtreProprietaire(req, where, params) {
-    if (req.user && req.user.role !== 'admin') {
+    if (req.user && req.user.role !== 'admin' && req.user.role !== 'production') {
         where += ' AND creator_id = ?';
         params.push(req.user.id);
     }
     return where;
+}
+
+// Accès au workflow production : admin ou service production
+function accesProduction(req) {
+    return req.user && (req.user.role === 'admin' || req.user.role === 'production');
+}
+
+// Date/heure locale au format 'YYYY-MM-DD HH:MM:SS'
+function maintenant() {
+    const d = new Date();
+    const p = (n) => String(n).padStart(2, '0');
+    return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds());
 }
 
 // Liste des documents (filtres : type, recherche, etat)
@@ -78,6 +90,10 @@ router.get('/', async (req, res, next) => {
             where += ' AND (numero LIKE ? OR client_nom LIKE ? OR client_ice LIKE ?)';
         }
         if (req.query.etat) { params.push(req.query.etat); where += ' AND etat = ?'; }
+        if (req.query.tapis_pret !== undefined && req.query.tapis_pret !== '') {
+            params.push(req.query.tapis_pret === '1' ? 1 : 0);
+            where += ' AND tapis_pret = ?';
+        }
         where = filtreProprietaire(req, where, params);
         const rows = await db.all(
             `SELECT * FROM document ${where} ORDER BY date_doc DESC, id DESC`,
@@ -200,7 +216,7 @@ router.get('/:id', async (req, res, next) => {
         const id = parseInt(req.params.id, 10);
         const doc = await db.get('SELECT * FROM document WHERE id = ?', id);
         if (!doc) return res.status(404).json({ error: 'Document non trouvé' });
-        if (req.user && req.user.role !== 'admin' && Number(doc.creator_id) !== Number(req.user.id)) {
+        if (req.user && !['admin', 'production'].includes(req.user.role) && Number(doc.creator_id) !== Number(req.user.id)) {
             return res.status(404).json({ error: 'Document non trouvé' });
         }
         const lignes = await db.all('SELECT * FROM document_ligne WHERE doc_id = ? ORDER BY id', id);
@@ -213,6 +229,7 @@ router.post('/', async (req, res, next) => {
         const { type, numero, date_doc, client_type, client_nom, nom_client, client_ice, client_adresse,
                 lignes, etat, mention, tva, qualite, remarque, montant_lettres, mode_paiement,
                 tisse, noue, hand_tuft, stock, remise } = req.body;
+        if (req.user && req.user.role === 'production') return res.status(403).json({ error: 'Le service production ne peut pas créer de documents' });
         if (!TYPES.includes(type)) return res.status(400).json({ error: 'Type de document invalide' });
         if (!date_doc) return res.status(400).json({ error: 'La date est requise' });
 
@@ -296,6 +313,37 @@ router.post('/', async (req, res, next) => {
         }
 
         res.status(201).json({ id: docId, numero: finalNumero, total_dhs: totalTtc });
+    } catch (e) { next(e); }
+});
+
+// Met à jour le champ "Tapis prêt : OUI/NON" (admin / service production)
+router.patch('/:id/tapis-pret', async (req, res, next) => {
+    try {
+        if (!accesProduction(req)) return res.status(403).json({ error: 'Accès réservé au service production' });
+        const id = parseInt(req.params.id, 10);
+        const doc = await db.get('SELECT * FROM document WHERE id = ?', id);
+        if (!doc) return res.status(404).json({ error: 'Document non trouvé' });
+        const tapis = req.body.tapis_pret ? 1 : 0;
+        await db.run('UPDATE document SET tapis_pret = ? WHERE id = ?', tapis, id);
+        res.json({ message: 'Tapis prêt mis à jour', tapis_pret: tapis });
+    } catch (e) { next(e); }
+});
+
+// Validation par le service production : la commande passe à VALIDÉE,
+// avec la date, l'heure et l'utilisateur auteur de la validation.
+router.post('/:id/valider-production', async (req, res, next) => {
+    try {
+        if (!accesProduction(req)) return res.status(403).json({ error: 'Accès réservé au service production' });
+        const id = parseInt(req.params.id, 10);
+        const doc = await db.get('SELECT * FROM document WHERE id = ?', id);
+        if (!doc) return res.status(404).json({ error: 'Document non trouvé' });
+        const now = maintenant();
+        await db.run(
+            "UPDATE document SET tapis_pret = 1, etat = 'validee', valide_le = ?, valide_par = ? WHERE id = ?",
+            now, req.user.nom || 'Service Production', id
+        );
+        const updated = await db.get('SELECT * FROM document WHERE id = ?', id);
+        res.json(updated);
     } catch (e) { next(e); }
 });
 
@@ -390,6 +438,7 @@ router.delete('/:id', async (req, res, next) => {
         const id = parseInt(req.params.id, 10);
         const doc = await db.get('SELECT * FROM document WHERE id = ?', id);
         if (!doc) return res.status(404).json({ error: 'Document non trouvé' });
+        if (req.user && req.user.role === 'production') return res.status(403).json({ error: 'La suppression est réservée' });
         if (req.user && req.user.role !== 'admin' && Number(doc.creator_id) !== Number(req.user.id)) {
             return res.status(404).json({ error: 'Document non trouvé' });
         }

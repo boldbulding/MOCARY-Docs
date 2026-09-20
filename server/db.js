@@ -46,6 +46,9 @@ function ddl(kind) {
     tva DOUBLE PRECISION NOT NULL DEFAULT 0,
     qualite TEXT DEFAULT '',
     remarque TEXT DEFAULT '',
+    tapis_pret INTEGER NOT NULL DEFAULT 0,
+    valide_le TEXT DEFAULT '',
+    valide_par TEXT DEFAULT '',
     date_creation ${ts}
 );`;
 
@@ -70,7 +73,7 @@ function ddl(kind) {
     nom TEXT NOT NULL,
     email TEXT NOT NULL UNIQUE,
     mot_de_passe TEXT NOT NULL,
-    role TEXT NOT NULL DEFAULT 'employe' CHECK(role IN ('admin','responsable','employe')),
+    role TEXT NOT NULL DEFAULT 'employe' CHECK(role IN ('admin','responsable','employe','production')),
     date_creation ${ts}
 );`;
 
@@ -114,6 +117,16 @@ async function init() {
         } else if (pgRemise.rows[0].data_type === 'integer') {
             await conn.query('ALTER TABLE document ALTER COLUMN remise TYPE DOUBLE PRECISION');
         }
+        const pgTapis = await conn.query("SELECT column_name FROM information_schema.columns WHERE table_name = 'document' AND column_name = 'tapis_pret'");
+        if (pgTapis.rows.length === 0) {
+            await conn.query('ALTER TABLE document ADD COLUMN tapis_pret INTEGER NOT NULL DEFAULT 0');
+        }
+        for (const col of ['valide_le', 'valide_par']) {
+            const c = await conn.query("SELECT column_name FROM information_schema.columns WHERE table_name = 'document' AND column_name = $1", [col]);
+            if (c.rows.length === 0) {
+                await conn.query('ALTER TABLE document ADD COLUMN ' + col + " TEXT DEFAULT ''");
+            }
+        }
     } else {
         const { DatabaseSync } = require('node:sqlite');
         const dataDir = path.join(__dirname, '..', 'data');
@@ -142,10 +155,19 @@ async function init() {
         if (!cols.some(c => c.name === 'remise')) {
             db.exec('ALTER TABLE document ADD COLUMN remise INTEGER NOT NULL DEFAULT 0');
         }
+        if (!cols.some(c => c.name === 'tapis_pret')) {
+            db.exec('ALTER TABLE document ADD COLUMN tapis_pret INTEGER NOT NULL DEFAULT 0');
+        }
+        for (const col of ['valide_le', 'valide_par']) {
+            if (!cols.some(c => c.name === col)) {
+                db.exec("ALTER TABLE document ADD COLUMN " + col + " TEXT DEFAULT ''");
+            }
+        }
         conn = {
             all: (sql, ...p) => db.prepare(sql).all(...p),
             get: (sql, ...p) => db.prepare(sql).get(...p),
-            run: (sql, ...p) => ({ lastInsertRowid: db.prepare(sql).run(...p).lastInsertRowid })
+            run: (sql, ...p) => ({ lastInsertRowid: db.prepare(sql).run(...p).lastInsertRowid }),
+            raw: db
         };
     }
 }
@@ -224,4 +246,58 @@ async function ensureMocary() {
     return await get('SELECT id FROM utilisateur WHERE email = ?', email);
 }
 
-module.exports = { init, all, get, run, isUniqueError, USE_PG, ensureAdmin, ensureMocary };
+// Élargit la contrainte CHECK du rôle pour accepter 'production' (bases existantes)
+async function ensureRoleProduction() {
+    if (USE_PG) {
+        const cons = await conn.query(`
+            SELECT c.conname FROM pg_constraint c
+            JOIN pg_class t ON t.oid = c.conrelid
+            JOIN pg_namespace n ON n.oid = t.relnamespace
+            WHERE t.relname = 'utilisateur' AND c.contype = 'c'`);
+        for (const row of (cons.rows || [])) {
+            await conn.query('ALTER TABLE utilisateur DROP CONSTRAINT "' + row.conname + '"');
+        }
+        await conn.query("ALTER TABLE utilisateur ADD CONSTRAINT utilisateur_role_check CHECK (role IN ('admin','responsable','employe','production'))");
+        return;
+    }
+    // SQLite : un rôle 'production' est-il accepté ?
+    try {
+        await run("INSERT INTO utilisateur (nom, email, mot_de_passe, role) VALUES ('__probe', '__probe@probe.test', 'x', 'production')");
+        await run("DELETE FROM utilisateur WHERE email = '__probe@probe.test'");
+        return;
+    } catch (e) { /* CHECK bloqué -> reconstruction de la table */ }
+    const raw = conn.raw;
+    if (!raw) return;
+    raw.exec('PRAGMA foreign_keys = OFF');
+    raw.exec('ALTER TABLE utilisateur RENAME TO utilisateur_ancien');
+    raw.exec(`CREATE TABLE utilisateur (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nom TEXT NOT NULL,
+        email TEXT NOT NULL UNIQUE,
+        mot_de_passe TEXT NOT NULL,
+        role TEXT NOT NULL DEFAULT 'employe' CHECK(role IN ('admin','responsable','employe','production')),
+        date_creation TEXT DEFAULT CURRENT_TIMESTAMP
+    );`);
+    raw.exec('INSERT INTO utilisateur (id, nom, email, mot_de_passe, role, date_creation) SELECT id, nom, email, mot_de_passe, role, date_creation FROM utilisateur_ancien;');
+    raw.exec('DROP TABLE utilisateur_ancien;');
+    raw.exec('PRAGMA foreign_keys = ON');
+}
+
+// Crée le compte "Service Production Tapis" s'il n'existe pas.
+// Identifiants: PRODUCTION_EMAIL/PRODUCTION_PASSWORD (.env) sinon production@example.com / production123
+async function ensureProduction() {
+    const email = String(process.env.PRODUCTION_EMAIL || 'production@example.com').trim().toLowerCase();
+    const motDePasse = process.env.PRODUCTION_PASSWORD || 'production123';
+    const existing = await get('SELECT id FROM utilisateur WHERE email = ?', email);
+    if (existing) return existing;
+    await ensureRoleProduction();
+    const bcrypt = require('bcryptjs');
+    const hash = bcrypt.hashSync(motDePasse, 10);
+    await run(
+        "INSERT INTO utilisateur (nom, email, mot_de_passe, role) VALUES (?, ?, ?, 'production')",
+        'Service Production Tapis', email, hash
+    );
+    return await get('SELECT id FROM utilisateur WHERE email = ?', email);
+}
+
+module.exports = { init, all, get, run, isUniqueError, USE_PG, ensureAdmin, ensureMocary, ensureProduction };
