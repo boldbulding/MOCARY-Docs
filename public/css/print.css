@@ -105,7 +105,7 @@ body { font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', serif; bac
 
 /* Pied */
 .doc-pied {
-    border-top: 2px solid #111; padding-top: 0.5rem; margin-top: 1rem;
+    border-top: 2px solid #111; padding-top: 0.5rem; margin-top: auto;
     text-align: center; font-size: 0.72rem; line-height: 1.5;
     font-family: 'Cinzel', serif;
     color: #111;
