@@ -24,6 +24,8 @@ async function charger() {
     document.getElementById('numero').textContent = doc.numero;
     document.getElementById('dateDoc').textContent = formatDate(doc.date_doc);
     document.title = (doc.type === 'devis' ? 'Devis' : 'Facture') + ' ' + doc.numero + ' - MOCARY DOCS';
+    const pdfHint = document.getElementById('pdfNomHint');
+    if (pdfHint) pdfHint.textContent = doc.numero;
 
     const body = document.getElementById('lignesBody');
     body.innerHTML = '';
@@ -34,12 +36,12 @@ async function charger() {
         const cells = [
             l.designation || '',
             l.type_ligne || '',
-            fmt(l.qte),
-            fmt(l.longueur),
-            fmt(l.largeur),
-            fmt(l.surface),
-            (isFinite(pu) && pu > 0) ? fmt(pu) + '<small>/ m²</small>' : '',
-            fmt(l.montant)
+            fmtd(l.qte, true),
+            fmtd(l.longueur),
+            fmtd(l.largeur),
+            fmtd(l.surface),
+            (isFinite(pu) && pu > 0) ? fmtd(pu) + '<small>/ m²</small>' : '',
+            fmtd(l.montant)
         ];
         cells.forEach((c, i) => {
             const td = document.createElement('td');
@@ -112,9 +114,14 @@ async function charger() {
     }
 }
 
-function fmt(n) {
+function fmtd(n, entier) {
     if (n === null || n === undefined || isNaN(n)) return '';
+    if (entier) return new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 0 }).format(n);
     return new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n);
+}
+
+function fmt(n) {
+    return fmtd(n, false);
 }
 
 charger().catch(err => { showNotification(err.message || 'Erreur', 'error'); });

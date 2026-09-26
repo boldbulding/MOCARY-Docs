@@ -7,14 +7,19 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/print.css?v=11">
+    <link rel="stylesheet" href="css/print.css?v=12">
 </head>
 <body class="print-body">
     <div class="toolbar no-print">
+        <button onclick="window.print()" class="btn-pdf" title="Enregistrer le document (Devis / Facture) au format PDF sur votre PC">⬇ Télécharger PDF</button>
         <button onclick="window.print()" class="btn-print">🖨 Imprimer</button>
         <button onclick="window.history.back()" class="btn-ghost">← Retour</button>
         <span class="spacer"></span>
         <a href="form.html?id=" id="editLink" class="btn-ghost" style="text-decoration:none;">✏️ Modifier</a>
+    </div>
+    <div class="pdf-hint no-print">
+        💾 Pour enregistrer sur votre PC : cliquez <strong>« Télécharger PDF »</strong>, dans la fenêtre choisissez la destination
+        <strong>« Enregistrer au format PDF »</strong> puis <strong>Enregistrer</strong>. Le fichier prendra le nom du document (ex. <span id="pdfNomHint">FAC-0001</span>).
     </div>
 
     <div class="sheet" id="sheet">
@@ -118,7 +123,7 @@
         </div>
     </div>
 
-    <script src="js/api.js?v=17"></script>
-    <script src="js/print.js?v=17"></script>
+    <script src="js/api.js?v=18"></script>
+    <script src="js/print.js?v=18"></script>
 </body>
 </html>
