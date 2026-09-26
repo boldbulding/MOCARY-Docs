@@ -74,6 +74,7 @@ async function loadDocs() {
             <td>${badgeTapis(d.tapis_pret)}</td>
             <td>${d.valide_le ? 'le ' + formatDate(d.valide_le) + ' à ' + heureValidee(d.valide_le) + (d.valide_par ? ' par ' + escapeHtml(d.valide_par) : '') : '-'}</td>
             <td class="actions">
+                <a class="btn btn-sm btn-pdf" href="print.html?id=${Number(d.id)}&pdf=1" target="_blank" relief="noopener" title="Enregistrer ce document en PDF">⬇ PDF</a>
                 <a class="btn btn-sm btn-primary" href="print.html?id=${Number(d.id)}" title="Imprimer">🖨 Imprimer</a>
                 ${estAdmin ? `<a class="btn btn-sm" href="form.html?id=${Number(d.id)}" title="Modifier">✏️ Modifier</a>` : ''}
                 <button class="btn btn-sm btn-danger" onclick="supprimer(${Number(d.id)})" title="Supprimer">🗑</button>

@@ -124,4 +124,16 @@ function fmt(n) {
     return fmtd(n, false);
 }
 
-charger().catch(err => { showNotification(err.message || 'Erreur', 'error'); });
+async function initPrint() {
+    try {
+        await charger();
+    } catch (e) {
+        showNotification(e.message || 'Erreur', 'error');
+        return;
+    }
+    if (params.get('pdf') === '1') {
+        setTimeout(() => window.print(), 450);
+    }
+}
+
+initPrint();

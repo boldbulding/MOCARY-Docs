@@ -52,6 +52,8 @@ main { max-width: 1200px; margin: 1.5rem auto; padding: 0 1rem; }
 .btn-dark:hover { background: #333; }
 .btn-danger { background: #fee2e2; border-color: transparent; color: var(--danger); }
 .btn-danger:hover { background: #fecaca; }
+.btn-pdf { background: #16a34a; border-color: #16a34a; color: #fff; }
+.btn-pdf:hover { background: #15803d; }
 .btn-sm { padding: 0.3rem 0.6rem; font-size: 0.78rem; }
 
 .table-container { overflow-x: auto; }
