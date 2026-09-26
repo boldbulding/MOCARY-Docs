@@ -117,7 +117,9 @@ function newLine(data) {
         if (cfg.dec) { inp.inputMode = 'decimal'; inp.autocomplete = 'off'; }
         if (cfg.key === 'qte') { inp.inputMode = 'numeric'; inp.step = 1; inp.min = 0; inp.title = 'Quantité : nombre entier uniquement'; }
         inp.placeholder = cfg.ph || '';
-        if (value !== undefined && value !== null) inp.value = value;
+        if (value !== undefined && value !== null) {
+            inp.value = (cfg.key === 'qte' && value !== '') ? String(Math.round(norm(value))) : value;
+        }
         return inp;
     };
 
@@ -156,6 +158,16 @@ function newLine(data) {
             if (cfg.key === 'pu') {
                 el.value = tr.puValues[activeType] || '';
                 el.addEventListener('input', () => { tr.puValues[activeType] = norm(el.value); recalc(tr); });
+            } else if (cfg.key === 'qte') {
+                el.addEventListener('keydown', (e) => {
+                    if (e.key.length === 1 && !/[0-9]/.test(e.key)) e.preventDefault();
+                });
+                el.addEventListener('input', () => {
+                    if (el.value !== '' && !/^\d+$/.test(String(el.value))) {
+                        el.value = String(el.value).replace(/[^0-9]/g, '');
+                    }
+                    recalc(tr);
+                });
             } else if (cfg.key === 'longueur' || cfg.key === 'largeur') {
                 el.addEventListener('input', () => recalc(tr));
             } else if (cfg.key === 'surface') {
