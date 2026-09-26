@@ -109,12 +109,14 @@ body { font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', serif; bac
     text-align: center; font-size: 0.72rem; line-height: 1.5;
     font-family: 'Cinzel', serif;
     color: #111;
+    page-break-inside: avoid;
+    break-inside: avoid;
 }
 .pied-ligne.small { font-size: 0.64rem; }
 
 @media print {
     body { background: #fff; }
     .no-print { display: none !important; }
-    .sheet { box-shadow: none; margin: 0; width: 100%; min-height: 1123px; border: none; padding: 0.4rem; }
+    .sheet { box-shadow: none; margin: 0; width: 100%; min-height: 1060px; border: none; padding: 0.4rem; }
     @page { size: A4; margin: 0.8cm; }
 }
