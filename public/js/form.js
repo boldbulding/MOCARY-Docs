@@ -181,8 +181,12 @@ function newLine(data) {
         if (cfg.dec && el.tagName === 'INPUT') {
             el.addEventListener('blur', () => {
                 let v = norm(el.value);
-                if (cfg.key === 'qte') v = Math.round(v);
-                el.value = v ? fmt(v) : '';
+                if (cfg.key === 'qte') {
+                    v = Math.round(v);
+                    el.value = v ? String(v) : '';
+                } else {
+                    el.value = v ? fmt(v) : '';
+                }
             });
         }
         td.appendChild(el);
