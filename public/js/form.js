@@ -115,6 +115,7 @@ function newLine(data) {
         inp.type = cfg.type || 'text';
         inp.className = (cfg.small ? 'small ' : '') + (cfg.mt ? 'mt' : '');
         if (cfg.dec) { inp.inputMode = 'decimal'; inp.autocomplete = 'off'; }
+        if (cfg.key === 'qte') { inp.inputMode = 'numeric'; inp.step = 1; inp.min = 0; inp.title = 'Quantité : nombre entier uniquement'; }
         inp.placeholder = cfg.ph || '';
         if (value !== undefined && value !== null) inp.value = value;
         return inp;
@@ -166,7 +167,11 @@ function newLine(data) {
             }
         }
         if (cfg.dec && el.tagName === 'INPUT') {
-            el.addEventListener('blur', () => { const v = norm(el.value); el.value = v ? fmt(v) : ''; });
+            el.addEventListener('blur', () => {
+                let v = norm(el.value);
+                if (cfg.key === 'qte') v = Math.round(v);
+                el.value = v ? fmt(v) : '';
+            });
         }
         td.appendChild(el);
         tr.appendChild(td);
@@ -194,7 +199,7 @@ function getInputs(tr) {
     return {
         designation: cells[0] ? cells[0].querySelector('input').value : '',
         type_ligne: cells[1] ? cells[1].querySelector('select').value : '',
-        qte: cells[2] ? norm(cells[2].querySelector('input').value) : 0,
+        qte: cells[2] ? Math.round(norm(cells[2].querySelector('input').value)) : 0,
         longueur: cells[3] ? norm(cells[3].querySelector('input').value) : 0,
         largeur: cells[4] ? norm(cells[4].querySelector('input').value) : 0,
         surfaceInp: cells[5] ? cells[5].querySelector('input') : null,
